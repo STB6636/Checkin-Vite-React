@@ -18,7 +18,7 @@ import { useSystemUpdateCheck } from '../../hooks/useSystemUpdateCheck.js';
 import { AttendanceModel } from '../../models/AttendanceModel.js';
 import { UserModel } from '../../models/UserModel.js';
 import { UIHelpers } from '../../core/UIHelpers.js';
-import { SystemUpdateModal } from './SystemUpdateModal.jsx';
+import { SystemUpdateModal, sanitizeImageUrl } from './SystemUpdateModal.jsx';
 
 export const AdminLayoutContext = createContext(null);
 
@@ -55,8 +55,8 @@ export const ROUTE_META_MAP = {
   },
   '/settings': {
     activePage: 'settings',
-    title: 'ตั้งค่าระบบ (SuperAdmin)',
-    subtitle: 'จัดการข้อมูลหน่วยงาน กะเวลา โครงสร้างองค์กร พิกัดสถานที่ และประกาศระบบ (7 แท็บตามต้นฉบับ)',
+    title: 'ตั้งค่าระบบพื้นฐาน (สำหรับ SuperAdmin)',
+    subtitle: 'จัดการหน่วยงาน, เวลาเริ่มเข้างาน, เกณฑ์เวลาออกงาน, กรองกะตามเวลาจริง และโครงสร้างแม่-ลูก',
   },
 };
 
@@ -314,7 +314,7 @@ export function AdminShell({
 
   const totalPending = counts.specialRequests + counts.timeCorrections + counts.passwordResets;
   const yearBuddhist = new Date().getFullYear() + 543;
-  const logoUrl = settings?.logo_url || '';
+  const logoUrl = sanitizeImageUrl(settings?.logo_url) || settings?.logo_url || '';
   const initials = (user?.full_name || user?.username || 'A').trim().slice(0, 2);
 
   const renderSidebarContent = () => (
