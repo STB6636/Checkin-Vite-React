@@ -15,12 +15,17 @@ export function useCameraStream() {
   const [ready, setReady] = useState(false);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState('');
+  const [errorCode, setErrorCode] = useState('');
+  const activeModeRef = useRef('user');
 
   const stopCamera = useCallback(() => {
     seqRef.current += 1;
     if (streamRef.current) {
       try {
-        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current.getTracks().forEach((track) => {
+          track.onended = null;
+          track.stop();
+        });
       } catch (_) {}
       streamRef.current = null;
     }
@@ -34,22 +39,27 @@ export function useCameraStream() {
     setStarting(false);
   }, []);
 
-  const startCamera = useCallback(async (mode = facingMode) => {
+  const startCamera = useCallback(async (mode, retryAttempt = 0) => {
     stopCamera();
+    const targetMode = mode || activeModeRef.current || 'user';
+    activeModeRef.current = targetMode;
+    setFacingMode(targetMode);
     const mySeq = ++seqRef.current;
     setStarting(true);
     setError('');
+    setErrorCode('');
     setReady(false);
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setError('อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับการเปิดกล้องสด กรุณาใช้ปุ่มเลือกรูปจากคลังภาพ');
+      setErrorCode('unsupported');
       setStarting(false);
       return false;
     }
 
     const constraintsList = [
-      { video: { facingMode: { ideal: mode }, width: { ideal: 1080 }, height: { ideal: 1440 } }, audio: false },
-      { video: { facingMode: mode }, audio: false },
+      { video: { facingMode: { ideal: targetMode }, width: { ideal: 1080 }, height: { ideal: 1440 } }, audio: false },
+      { video: { facingMode: targetMode }, audio: false },
       { video: true, audio: false },
     ];
 
@@ -61,6 +71,10 @@ export function useCameraStream() {
         if (stream) break;
       } catch (err) {
         lastErr = err;
+        // Stop immediately on NotAllowedError / PermissionDeniedError (never prompt 3x!)
+        if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError' || err?.name === 'SecurityError') {
+          break;
+        }
       }
     }
 
@@ -70,15 +84,39 @@ export function useCameraStream() {
     }
 
     if (!stream) {
-      const msg = lastErr?.name === 'NotAllowedError'
-        ? 'ไม่ได้รับอนุญาตให้เข้าถึงกล้อง กรุณาเปิดสิทธิ์กล้องหรือเลือกรูปจากคลังภาพ'
-        : 'ไม่สามารถเปิดกล้องได้ในขณะนี้ กรุณาเลือกรูปจากคลังภาพแทน';
-      setError(msg);
+      // Transient hardware lock retry once after 300ms
+      if (retryAttempt === 0 && (lastErr?.name === 'NotReadableError' || lastErr?.name === 'AbortError')) {
+        await new Promise((r) => window.setTimeout(r, 300));
+        if (mySeq === seqRef.current) {
+          return startCamera(targetMode, 1);
+        }
+        return false;
+      }
+
+      if (lastErr?.name === 'NotAllowedError' || lastErr?.name === 'PermissionDeniedError' || lastErr?.name === 'SecurityError') {
+        setError('ไม่ได้รับอนุญาตให้เข้าถึงกล้อง กรุณาเปิดสิทธิ์กล้องในเบราว์เซอร์หรือเลือกรูปจากคลังภาพ');
+        setErrorCode('permission_denied');
+      } else if (lastErr?.name === 'NotFoundError' || lastErr?.name === 'DevicesNotFoundError') {
+        setError('ไม่พบอุปกรณ์กล้องบนเครื่องนี้ กรุณาเลือกรูปจากคลังภาพแทน');
+        setErrorCode('not_found');
+      } else {
+        setError('ไม่สามารถเปิดกล้องได้ในขณะนี้ กรุณากดลองเปิดกล้องใหม่หรือเลือกรูปจากคลังภาพ');
+        setErrorCode('in_use');
+      }
       setStarting(false);
       return false;
     }
 
     streamRef.current = stream;
+    stream.getVideoTracks().forEach((track) => {
+      track.onended = () => {
+        if (mySeq !== seqRef.current) return;
+        setReady(false);
+        setError('สัญญาณกล้องถูกตัดการทำงานโดยระบบปฏิบัติการ กรุณากดเปิดกล้องอีกครั้ง');
+        setErrorCode('ended');
+      };
+    });
+
     const videoEl = videoRef.current;
     if (videoEl) {
       videoEl.srcObject = stream;
@@ -91,13 +129,27 @@ export function useCameraStream() {
     setReady(true);
     setStarting(false);
     return true;
-  }, [facingMode, stopCamera]);
+  }, [stopCamera]);
+
+  // Recover camera cleanly if mobile browser suspends the stream when switching apps
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible' && streamRef.current) {
+        const tracks = streamRef.current.getVideoTracks();
+        const isDead = tracks.length === 0 || tracks.every((t) => t.readyState === 'ended');
+        if (isDead) {
+          startCamera(activeModeRef.current, 0);
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [startCamera]);
 
   const flipCamera = useCallback(async () => {
-    const next = facingMode === 'user' ? 'environment' : 'user';
-    setFacingMode(next);
-    await startCamera(next);
-  }, [facingMode, startCamera]);
+    const next = activeModeRef.current === 'user' ? 'environment' : 'user';
+    await startCamera(next, 0);
+  }, [startCamera]);
 
   const capturePhoto = useCallback(() => {
     const videoEl = videoRef.current;
@@ -117,6 +169,7 @@ export function useCameraStream() {
     ready,
     starting,
     error,
+    errorCode,
     startCamera,
     stopCamera,
     flipCamera,

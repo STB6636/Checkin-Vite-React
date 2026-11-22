@@ -239,6 +239,17 @@ export default function ReportsPage() {
 
   const handleSaveRecord = async (e) => {
     e.preventDefault();
+    const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
+    const cleanIn = String(editForm.check_in_time || '').trim();
+    const cleanOut = String(editForm.check_out_time || '').trim();
+    if (cleanIn && !timeRegex.test(cleanIn)) {
+      await UIHelpers.alert('รูปแบบเวลาเข้างานไม่ถูกต้อง', 'กรุณาระบุเวลาเข้างานเป็นรูปแบบ 24 ชั่วโมง เช่น 08:30', 'warning');
+      return;
+    }
+    if (cleanOut && !timeRegex.test(cleanOut)) {
+      await UIHelpers.alert('รูปแบบเวลาเลิกงานไม่ถูกต้อง', 'กรุณาระบุเวลาเลิกงานเป็นรูปแบบ 24 ชั่วโมง เช่น 16:30 หรือเว้นว่างไว้', 'warning');
+      return;
+    }
     setEditSaving(true);
     try {
       const targetLogId = editForm.log_id || editForm.id || null;
@@ -248,8 +259,8 @@ export default function ReportsPage() {
         personnel_id: editForm.personnel_id,
         work_date: editForm.work_date,
         shift_name: editForm.shift_name,
-        check_in_time: editForm.check_in_time || null,
-        check_out_time: editForm.check_out_time || null,
+        check_in_time: cleanIn || null,
+        check_out_time: cleanOut || null,
         status: editForm.status || 'ปฏิบัติงานปกติ',
         check_in_location: editForm.check_in_location || null,
         check_out_location: editForm.check_out_location || null,
@@ -1231,6 +1242,13 @@ export default function ReportsPage() {
         }
       >
         <form id="formReportEdit" onSubmit={handleSaveRecord} className="space-y-3.5 text-sm">
+          {Boolean(editForm.log_id) && (
+            <div className="flex items-center gap-2">
+              <span id="repEditModeBadge" className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
+                <i className="fa-solid fa-pen-to-square text-[10px]" />แก้ไขบันทึกเดิม
+              </span>
+            </div>
+          )}
           <div>
             <label className="block text-xs font-bold mb-1">บุคลากร *</label>
             <select required disabled={Boolean(editForm.log_id)} value={editForm.personnel_id} onChange={(e) => setEditForm({ ...editForm, personnel_id: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm disabled:opacity-60">
@@ -1256,25 +1274,47 @@ export default function ReportsPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold">เวลาเข้างาน</label>
+                <label className="text-xs font-bold">เวลาเข้างาน (24 ชม.)</label>
                 <div className="flex gap-1.5 text-[10px]">
                   {activeShiftObj && <button type="button" onClick={() => setEditForm({ ...editForm, check_in_time: activeShiftObj.check_in })} className="text-[#00744B] font-bold hover:underline">ตามกะ ({activeShiftObj.check_in})</button>}
                   <button type="button" onClick={() => setEditForm({ ...editForm, check_in_time: '' })} className="text-rose-600 font-bold hover:underline">ล้าง</button>
                 </div>
               </div>
-              <input type="time" value={editForm.check_in_time} onChange={(e) => setEditForm({ ...editForm, check_in_time: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 font-mono text-sm" />
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={5}
+                placeholder="08:30"
+                value={editForm.check_in_time}
+                onChange={(e) => setEditForm({ ...editForm, check_in_time: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 font-mono text-center text-sm"
+              />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold">เวลาออกงาน</label>
+                <label className="text-xs font-bold">เวลาเลิกงาน (24 ชม.)</label>
                 <div className="flex gap-1.5 text-[10px]">
-                  <button type="button" onClick={() => setEditForm({ ...editForm, check_out_time: activeShiftObj?.check_out || settings?.standard_check_out || '16:30' })} className="text-sky-600 font-bold hover:underline">มาตรฐาน ({activeShiftObj?.check_out || settings?.standard_check_out || '16:30'})</button>
-                  <button type="button" onClick={() => setEditForm({ ...editForm, check_out_time: '' })} className="text-rose-600 font-bold hover:underline">ล้าง</button>
+                  <button type="button" onClick={() => setEditForm({ ...editForm, check_out_time: activeShiftObj?.check_out || settings?.standard_check_out || '16:30' })} className="text-sky-600 font-bold hover:underline">ตามกะ ({activeShiftObj?.check_out || settings?.standard_check_out || '16:30'})</button>
+                  {editForm.check_out_time && <button type="button" onClick={() => setEditForm({ ...editForm, check_out_time: '' })} className="text-rose-600 font-bold hover:underline">ล้าง</button>}
                 </div>
               </div>
-              <input type="time" value={editForm.check_out_time} onChange={(e) => setEditForm({ ...editForm, check_out_time: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 font-mono text-sm" />
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={5}
+                placeholder="ยังไม่ลงเวลาออก"
+                value={editForm.check_out_time}
+                onChange={(e) => setEditForm({ ...editForm, check_out_time: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 font-mono text-center text-sm"
+              />
             </div>
           </div>
+          {Boolean(editForm.log_id) && !String(editForm.check_out_time || '').trim() && (
+            <div id="repCheckoutHintBanner" className="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 text-[11px] font-medium text-sky-800 dark:text-sky-200 flex items-start gap-2 leading-relaxed">
+              <i className="fa-solid fa-circle-info mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" />
+              <span>บุคลากรรายนี้ยังไม่ได้ลงเวลาออกงาน — เว้นว่างไว้หากยังไม่ต้องการบันทึกเวลาเลิกงาน (หรือกดปุ่ม ตามกะ)</span>
+            </div>
+          )}
           <div>
             <label className="block text-xs font-bold mb-1">หมายเหตุ</label>
             <input type="text" value={editForm.remark} onChange={(e) => setEditForm({ ...editForm, remark: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" placeholder="ระบุหมายเหตุ (ถ้ามี)..." />

@@ -2,15 +2,63 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCameraStream } from '../../hooks/useCameraStream.js';
 import { SettingsModel } from '../../models/SettingsModel.js';
 
+function cropImageToPortrait3x4(dataUrl, targetW = 720, targetH = 960, quality = 0.85) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = targetW;
+        canvas.height = targetH;
+        const ctx = canvas.getContext('2d');
+        const targetRatio = targetW / targetH;
+        const srcRatio = img.naturalWidth / img.naturalHeight;
+        let sx = 0;
+        let sy = 0;
+        let sw = img.naturalWidth;
+        let sh = img.naturalHeight;
+        if (srcRatio > targetRatio) {
+          sw = img.naturalHeight * targetRatio;
+          sx = (img.naturalWidth - sw) / 2;
+        } else {
+          sh = img.naturalWidth / targetRatio;
+          sy = (img.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      } catch (_) {
+        resolve(dataUrl);
+      }
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+function getBrowserPermissionGuide() {
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+  if (/Line\//i.test(ua)) {
+    return 'หากเปิดในแอป LINE ให้แตะปุ่ม "เปิดในเบราว์เซอร์เริ่มต้น (Safari / Chrome)" มุมขวาล่าง หรือเปิดสิทธิ์กล้องให้แอป LINE ในตั้งค่าเครื่อง';
+  }
+  if (/iPhone|iPad|iPod/i.test(ua)) {
+    return 'iOS Safari: แตะไอคอน "aA" หรือรูปกุญแจที่แถบที่อยู่ > ตั้งค่าเว็บไซต์ > กล้อง > เลือก "อนุญาต" แล้วรีเฟรชหน้า';
+  }
+  if (/Android/i.test(ua)) {
+    return 'Android Chrome: แตะไอคอนตั้งค่า/กุญแจข้าง URL > สิทธิ์ (Permissions) > เปิดอนุญาตกล้อง แล้วลองใหม่อีกครั้ง';
+  }
+  return 'แตะไอคอนรูปกุญแจ/กล้องที่แถบ URL ด้านบนของเบราว์เซอร์ เพื่ออนุญาตสิทธิ์กล้องสำหรับเว็บไซต์นี้';
+}
+
 /**
- * FullscreenCameraModal (ADR-0019 + Full Visual Parity + Option 1 Enhancements)
+ * FullscreenCameraModal (ADR-0019 + Option 1 Enhancements)
  * - Mirror -scale-x-100 for front camera
  * - Dashed face guide frame + badge "จัดใบหน้าให้อยู่ในกรอบ"
- * - #cameraPermissionHintBanner
- * - Retains React enhancements: Preview/Retake + Flip Camera + Gallery Fallback
+ * - Browser-aware #cameraPermissionHintBanner
+ * - Retains Option 1 enhancements: Preview/Retake + Flip Camera + Gallery Fallback (cropped 720×960 3:4 JPEG 0.85, NO capture="user")
+ * - Never auto-submits check-in after photo confirmation
  */
 export function FullscreenCameraModal({ open, onClose, onConfirmPhoto, allowGalleryFallback = true, title = 'ถ่ายภาพยืนยันการลงเวลา' }) {
-  const { videoRef, canvasRef, facingMode, ready, starting, error, startCamera, stopCamera, flipCamera, capturePhoto } = useCameraStream();
+  const { videoRef, canvasRef, facingMode, ready, starting, error, errorCode, startCamera, stopCamera, flipCamera, capturePhoto } = useCameraStream();
   const [capturedDataUrl, setCapturedDataUrl] = useState('');
   const galleryRef = useRef(null);
 
@@ -44,9 +92,10 @@ export function FullscreenCameraModal({ open, onClose, onConfirmPhoto, allowGall
     e.target.value = '';
     if (!file) return;
     try {
-      const dataUrl = await SettingsModel.fileToDataUrl(file);
-      if (dataUrl) {
-        setCapturedDataUrl(dataUrl);
+      const rawDataUrl = await SettingsModel.fileToDataUrl(file);
+      if (rawDataUrl) {
+        const cropped = await cropImageToPortrait3x4(rawDataUrl, 720, 960, 0.85);
+        setCapturedDataUrl(cropped);
         stopCamera();
       }
     } catch (_) {}
@@ -59,7 +108,8 @@ export function FullscreenCameraModal({ open, onClose, onConfirmPhoto, allowGall
 
   return (
     <div className="fixed inset-0 z-[9995] bg-slate-950/95 flex flex-col items-center justify-between p-3 sm:p-5" style={{ height: '100dvh' }}>
-      <input ref={galleryRef} type="file" accept="image/*" capture="user" onChange={handleGalleryFile} className="hidden" />
+      {/* NO capture="user" so mobile & LINE open the photo library cleanly */}
+      <input ref={galleryRef} type="file" accept="image/*" onChange={handleGalleryFile} className="hidden" />
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Top Bar */}
@@ -111,14 +161,27 @@ export function FullscreenCameraModal({ open, onClose, onConfirmPhoto, allowGall
                 </div>
               )}
               {error && (
-                <div className="absolute inset-0 bg-slate-900/90 p-5 flex flex-col items-center justify-center text-center text-white text-xs gap-3">
+                <div className="absolute inset-0 bg-slate-900/95 p-5 flex flex-col items-center justify-center text-center text-white text-xs gap-3 overflow-y-auto">
                   <i className="fa-solid fa-video-slash text-3xl text-amber-400" />
-                  <p>{error}</p>
-                  {allowGalleryFallback && (
-                    <button type="button" onClick={() => galleryRef.current?.click()} className="px-4 py-2 rounded-xl bg-emerald-600 font-bold text-white">
-                      <i className="fa-solid fa-images mr-1.5" />เลือกรูปจากคลังภาพ / กล้องเครื่อง
-                    </button>
+                  <p className="font-bold text-sm">{error}</p>
+                  {errorCode === 'permission_denied' && (
+                    <div className="p-3 rounded-xl bg-amber-950/70 border border-amber-500/40 text-[11px] text-amber-100 leading-relaxed text-left">
+                      <p className="font-bold text-amber-300 mb-1">
+                        <i className="fa-solid fa-circle-info mr-1" />วิธีเปิดสิทธิ์กล้อง:
+                      </p>
+                      <p>{getBrowserPermissionGuide()}</p>
+                    </div>
                   )}
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+                    <button type="button" onClick={() => startCamera(facingMode, 0)} className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 font-bold text-white">
+                      <i className="fa-solid fa-rotate-right mr-1.5" />ลองเปิดกล้องใหม่
+                    </button>
+                    {allowGalleryFallback && (
+                      <button type="button" onClick={() => galleryRef.current?.click()} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 font-bold text-white">
+                        <i className="fa-solid fa-images mr-1.5" />เลือกรูปจากคลังภาพ
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </>
@@ -142,7 +205,7 @@ export function FullscreenCameraModal({ open, onClose, onConfirmPhoto, allowGall
               }}
               className="flex-1 py-3 rounded-2xl bg-[#00744B] hover:bg-[#00A368] text-white font-extrabold text-sm shadow-lg"
             >
-              <i className="fa-solid fa-check mr-1.5" />ใช้ภาพนี้และบันทึกเวลา
+              <i className="fa-solid fa-check mr-1.5" />ใช้ภาพนี้
             </button>
           </>
         ) : (

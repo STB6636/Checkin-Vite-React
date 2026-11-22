@@ -10,10 +10,17 @@ import { SettingsModel } from '../models/SettingsModel.js';
  * Layer 3: Watermark Polling Failsafe (every 12s while tab is visible)
  * Cleanly unsubscribes and clears all intervals/listeners on unmount or user logout.
  */
-export function useAdminRealtimeSync({ enabled = true, onSync, onSettingsUpdated, pollIntervalMs = 12000 }) {
+export function useAdminRealtimeSync({
+  enabled = true,
+  onSync,
+  onSettingsUpdated,
+  pollIntervalMs = 12000,
+  settingsHotReloadMs = 0,
+}) {
   const onSyncRef = useRef(onSync);
   const onSettingsRef = useRef(onSettingsUpdated);
   const watermarkRef = useRef('');
+  const settingsHashRef = useRef('');
 
   useEffect(() => {
     onSyncRef.current = onSync;
@@ -66,6 +73,7 @@ export function useAdminRealtimeSync({ enabled = true, onSync, onSettingsUpdated
 
     const busChannel = db
       .channel('bma_global_realtime_bus')
+      .on('broadcast', { event: 'attendance_updated' }, () => triggerSync('broadcast_attendance'))
       .on('broadcast', { event: 'attendance_changed' }, () => triggerSync('broadcast_attendance'))
       .on('broadcast', { event: 'special_request_changed' }, () => triggerSync('broadcast_special'))
       .on('broadcast', { event: 'time_correction_changed' }, () => triggerSync('broadcast_correction'))
@@ -86,6 +94,40 @@ export function useAdminRealtimeSync({ enabled = true, onSync, onSettingsUpdated
     };
 
     const pollTimer = window.setInterval(checkWatermark, pollIntervalMs);
+
+    // Optional 5s Settings Hot-Reload failsafe (e.g. CheckinPage)
+    let settingsTimer = null;
+    if (settingsHotReloadMs > 0) {
+      settingsTimer = window.setInterval(async () => {
+        if (!alive || document.visibilityState !== 'visible') return;
+        try {
+          const fresh = await SettingsModel.getSettings(true);
+          if (!alive || !fresh) return;
+          const hash = JSON.stringify({
+            updated_at: fresh.updated_at,
+            enforce_geofence_radius: fresh.enforce_geofence_radius,
+            disable_normal_hours_checkin: fresh.disable_normal_hours_checkin,
+            single_click_checkin: fresh.single_click_checkin,
+            require_gps: fresh.require_gps,
+            require_photo: fresh.require_photo,
+            allow_gallery_fallback: fresh.allow_gallery_fallback,
+            filter_shifts_by_realtime: fresh.filter_shifts_by_realtime,
+            early_shift_window_minutes: fresh.early_shift_window_minutes,
+            official_locations: fresh.official_locations,
+            work_shifts: fresh.work_shifts,
+            announcement_updated_at: fresh.announcement_updated_at,
+          });
+          if (settingsHashRef.current && settingsHashRef.current !== hash) {
+            window.dispatchEvent(new CustomEvent('bma:settings-updated', { detail: fresh }));
+            if (typeof onSettingsRef.current === 'function') {
+              onSettingsRef.current(fresh);
+            }
+          }
+          settingsHashRef.current = hash;
+        } catch (_) {}
+      }, settingsHotReloadMs);
+    }
+
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
         triggerSync('visibility');
@@ -97,11 +139,12 @@ export function useAdminRealtimeSync({ enabled = true, onSync, onSettingsUpdated
       alive = false;
       window.clearTimeout(debounceTimer);
       window.clearInterval(pollTimer);
+      if (settingsTimer) window.clearInterval(settingsTimer);
       document.removeEventListener('visibilitychange', onVisibility);
       try {
         db.removeChannel(pgChannel);
         db.removeChannel(busChannel);
       } catch (_) {}
     };
-  }, [enabled, pollIntervalMs]);
+  }, [enabled, pollIntervalMs, settingsHotReloadMs]);
 }

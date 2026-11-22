@@ -175,17 +175,22 @@ export default function SettingsPage() {
   };
 
   const handleMoveItem = async (fieldKey, idx, dir) => {
+    const prevDraft = draft;
     const arr = Array.isArray(draft[fieldKey]) ? [...draft[fieldKey]] : [];
     if (SettingsModel.moveItemInArray(arr, idx, dir)) {
       const nextDraft = { ...draft, [fieldKey]: arr };
       setDraft(nextDraft);
-      await persistNonAnnouncementSettings(nextDraft, false);
+      const ok = await persistNonAnnouncementSettings(nextDraft, false);
+      if (!ok) {
+        setDraft(prevDraft);
+      }
     }
   };
 
   // --- Tab 1 Handlers ---
   const handleLogoFileChange = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
     try {
       const dataUrl = await SettingsModel.fileToDataUrl(file);
@@ -391,6 +396,10 @@ export default function SettingsPage() {
     }
     const firstType = uniquePosTypes[0] || '';
     const titles = SettingsModel.getUniquePositionTitles(draft, firstType);
+    if (titles.length === 0) {
+      UIHelpers.alert('ยังไม่มีตำแหน่งในสายงาน', 'กรุณากดปุ่ม "2. + เพิ่มตำแหน่งในสายงาน" ก่อนเพิ่มระดับตำแหน่ง', 'warning');
+      return;
+    }
     setPosModalParents({ type: firstType, title: titles[0] || '', level: '' });
     setMultiRows(['']);
     setItemModal({
@@ -469,10 +478,18 @@ export default function SettingsPage() {
 
   const openAffStep3Modal = () => {
     const firstOrg = uniqueOrgs[0] || 'กรุงเทพมหานคร';
-    const bureaus = SettingsModel.getUniqueBureaus(draft, firstOrg);
+    const realBureaus = [...new Set(
+      (draft.affiliations || [])
+        .filter((a) => (!firstOrg || a.organization === firstOrg) && a.bureau)
+        .map((a) => a.bureau)
+    )];
+    if (realBureaus.length === 0) {
+      UIHelpers.alert('ยังไม่มีสำนักงาน/กอง', 'กรุณากดปุ่ม "2. + เพิ่มสำนักงาน/กอง" ก่อนเพิ่มส่วน/ฝ่าย', 'warning');
+      return;
+    }
     setAffModalParents({
       organization: firstOrg,
-      bureau: bureaus[0] || '',
+      bureau: realBureaus[0] || '',
       division: '',
       group: '',
     });
@@ -490,9 +507,21 @@ export default function SettingsPage() {
 
   const openAffStep4Modal = () => {
     const firstOrg = uniqueOrgs[0] || 'กรุงเทพมหานคร';
-    const bureaus = SettingsModel.getUniqueBureaus(draft, firstOrg);
-    const firstBureau = bureaus[0] || '';
+    const realBureaus = [...new Set(
+      (draft.affiliations || [])
+        .filter((a) => (!firstOrg || a.organization === firstOrg) && a.bureau)
+        .map((a) => a.bureau)
+    )];
+    const firstBureau = realBureaus[0] || '';
+    if (!firstBureau) {
+      UIHelpers.alert('ยังไม่มีสำนักงาน/กอง', 'กรุณาเพิ่มสำนักงาน/กองและส่วน/ฝ่ายก่อนเพิ่มกลุ่มงาน', 'warning');
+      return;
+    }
     const divisions = SettingsModel.getUniqueDivisions(draft, firstBureau, firstOrg);
+    if (divisions.length === 0) {
+      UIHelpers.alert('ยังไม่มีส่วน/ฝ่าย', 'กรุณากดปุ่ม "3. + เพิ่มส่วน/ฝ่าย" ก่อนเพิ่มกลุ่มงาน', 'warning');
+      return;
+    }
     setAffModalParents({
       organization: firstOrg,
       bureau: firstBureau,
@@ -991,7 +1020,12 @@ export default function SettingsPage() {
           fileName: `Announcement_${UIHelpers.getTodayISO()}_${Date.now()}.${ext}`,
         }
       );
-      const finalUrl = typeof uploadedUrl === 'string' ? uploadedUrl : uploadedUrl?.url || dataUrl;
+      const finalUrl = typeof uploadedUrl === 'string'
+        ? uploadedUrl.trim()
+        : String(uploadedUrl?.url || '').trim();
+      if (!finalUrl || finalUrl.startsWith('data:')) {
+        throw new Error('Google Drive ไม่ได้ส่งลิงก์รูปภาพกลับมา (ยกเลิกการเก็บ Base64 ลงฐานข้อมูล)');
+      }
       updateField('announcement_image_url', finalUrl);
       setAnnUploadStatus('✓ อัปโหลดสำเร็จ');
       setAnnImgBadge({ type: 'ok', text: '✓ อัปโหลดขึ้น Drive แล้ว' });
@@ -1000,12 +1034,13 @@ export default function SettingsPage() {
     } catch (err) {
       UIHelpers.hideLoading();
       setAnnUploadStatus('✗ อัปโหลดไม่สำเร็จ');
-      e.target.value = '';
       await UIHelpers.alert(
         'อัปโหลดรูปภาพไม่สำเร็จ',
         err?.message || 'กรุณาตรวจสอบสิทธิ์โฟลเดอร์และการ Deploy Google Apps Script',
         'error'
       );
+    } finally {
+      e.target.value = '';
     }
   };
 
@@ -1060,8 +1095,17 @@ export default function SettingsPage() {
     setSaving(true);
     UIHelpers.showLoading('กำลังบันทึกการตั้งค่าประกาศระบบ...');
     try {
+      // Scoped Tab 7 save: preserve saved Tab 1–6 settings and update only the 7 announcement fields + timestamp
       const payload = {
-        ...draft,
+        ...Config.DEFAULT_SETTINGS,
+        ...settings,
+        announcement_enabled: Boolean(draft.announcement_enabled),
+        announcement_mode: draft.announcement_mode === 'image' ? 'image' : 'text',
+        announcement_start_date: String(draft.announcement_start_date || ''),
+        announcement_end_date: String(draft.announcement_end_date || ''),
+        announcement_title: String(draft.announcement_title || ''),
+        announcement_body: String(draft.announcement_body ?? ''),
+        announcement_image_url: String(draft.announcement_image_url || ''),
         announcement_updated_at: new Date().toISOString(),
       };
       const res = await saveSettings(payload);
@@ -1896,7 +1940,29 @@ export default function SettingsPage() {
                 type="button"
                 id="btnSaveStatusAndColors"
                 disabled={saving}
-                onClick={() => persistNonAnnouncementSettings(draft, true)}
+                onClick={async () => {
+                  const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
+                  const startT = String(draft.allow_checkin_start_time || '').trim();
+                  const inT = String(draft.standard_check_in || '').trim();
+                  const outT = String(draft.standard_check_out || '').trim();
+                  if (!timeRegex.test(startT) || !timeRegex.test(inT) || !timeRegex.test(outT)) {
+                    await UIHelpers.alert(
+                      'รูปแบบเวลาไม่ถูกต้อง',
+                      'กรุณาระบุเวลาทั้ง 3 ช่อง (เวลาเริ่มเปิดลงเวลา, เวลาเข้างานมาตรฐาน, เวลาเลิกงานมาตรฐาน) เป็นรูปแบบ 24 ชั่วโมง HH:mm เช่น 06:00, 08:30, 16:30',
+                      'warning'
+                    );
+                    return;
+                  }
+                  await persistNonAnnouncementSettings(
+                    {
+                      ...draft,
+                      allow_checkin_start_time: startT,
+                      standard_check_in: inT,
+                      standard_check_out: outT,
+                    },
+                    true
+                  );
+                }}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-[#00744B] hover:bg-emerald-50 transition shadow-md cursor-pointer self-start sm:self-auto"
               >
                 <i className="fa-solid fa-floppy-disk" />

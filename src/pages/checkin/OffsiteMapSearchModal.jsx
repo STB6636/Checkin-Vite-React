@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ResponsiveModal } from '../../components/common/ResponsiveModal.jsx';
 import { AttendanceModel } from '../../models/AttendanceModel.js';
 import { loadLeaflet } from '../../utils/vendorBridge.js';
@@ -10,11 +10,33 @@ export function OffsiteMapSearchModal({ open, onClose, initialCoords, onSelectPl
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [searchTouched, setSearchTouched] = useState(false);
   const [picked, setPicked] = useState(initialCoords || { lat: 13.756331, lng: 100.501765, name: '' });
 
   const mapElRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
+  const searchSeqRef = useRef(0);
+  const pickedRef = useRef(picked);
+
+  useEffect(() => {
+    pickedRef.current = picked;
+  }, [picked]);
+
+  // Sync picked coordinates & reset search state whenever modal opens
+  useEffect(() => {
+    if (!open) return;
+    const initLat = Number(initialCoords?.lat);
+    const initLng = Number(initialCoords?.lng);
+    setPicked({
+      lat: Number.isFinite(initLat) ? initLat : 13.756331,
+      lng: Number.isFinite(initLng) ? initLng : 100.501765,
+      name: initialCoords?.name || '',
+    });
+    setQuery('');
+    setResults([]);
+    setSearchTouched(false);
+  }, [open, initialCoords?.lat, initialCoords?.lng, initialCoords?.name]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -23,8 +45,8 @@ export function OffsiteMapSearchModal({ open, onClose, initialCoords, onSelectPl
     async function bootMap() {
       const L = await loadLeaflet();
       if (!alive || !mapElRef.current) return;
-      const lat = picked.lat || 13.756331;
-      const lng = picked.lng || 100.501765;
+      const lat = Number.isFinite(Number(initialCoords?.lat)) ? Number(initialCoords.lat) : 13.756331;
+      const lng = Number.isFinite(Number(initialCoords?.lng)) ? Number(initialCoords.lng) : 100.501765;
 
       const map = L.map(mapElRef.current).setView([lat, lng], 15);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
@@ -60,29 +82,77 @@ export function OffsiteMapSearchModal({ open, onClose, initialCoords, onSelectPl
     };
   }, [open]);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  const executeSearch = useCallback(async (qText) => {
+    const trimmed = String(qText || '').trim();
+    if (trimmed.length < 2) {
+      setResults([]);
+      setSearchTouched(false);
+      return;
+    }
+    const seq = ++searchSeqRef.current;
     setSearching(true);
+    setSearchTouched(true);
     try {
-      const res = await AttendanceModel.searchPlaces(query.trim());
+      const refPoint = pickedRef.current || { lat: 13.756331, lng: 100.501765 };
+      const res = await AttendanceModel.searchPlaces(trimmed, {
+        refLat: Number(refPoint.lat) || 13.756331,
+        refLng: Number(refPoint.lng) || 100.501765,
+        userProvince: 'กรุงเทพมหานคร',
+        limit: 8,
+      });
+      if (seq !== searchSeqRef.current) return;
       setResults(Array.isArray(res) ? res : []);
     } finally {
-      setSearching(false);
+      if (seq === searchSeqRef.current) {
+        setSearching(false);
+      }
     }
+  }, []);
+
+  // 350ms debounced search as user types
+  useEffect(() => {
+    if (!open) return undefined;
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      setResults([]);
+      setSearchTouched(false);
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      executeSearch(trimmed);
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [query, open, executeSearch]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    await executeSearch(query);
   };
 
   const handlePickResult = (place) => {
     const lat = Number(place.lat ?? place.latitude);
     const lng = Number(place.lng ?? place.longitude ?? place.lon);
-    const name = place.display_name || place.name || query;
+    const name = place.mainName || place.display_name || place.name || query;
     if (Number.isFinite(lat) && Number.isFinite(lng)) {
       setPicked({ lat, lng, name });
       if (mapRef.current && markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
-        mapRef.current.setView([lat, lng], 16);
+        const ext = place.extent;
+        if (ext && Number.isFinite(ext.ymin) && Number.isFinite(ext.xmin) && Number.isFinite(ext.ymax) && Number.isFinite(ext.xmax)) {
+          try {
+            mapRef.current.fitBounds(
+              [[ext.ymin, ext.xmin], [ext.ymax, ext.xmax]],
+              { maxZoom: 17, padding: [24, 24] }
+            );
+          } catch (_) {
+            mapRef.current.setView([lat, lng], 16);
+          }
+        } else {
+          mapRef.current.setView([lat, lng], 16);
+        }
       }
       setResults([]);
+      setSearchTouched(false);
     }
   };
 
@@ -125,18 +195,40 @@ export function OffsiteMapSearchModal({ open, onClose, initialCoords, onSelectPl
         </form>
 
         {results.length > 0 && (
-          <div className="max-h-36 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-            {results.slice(0, 6).map((r, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => handlePickResult(r)}
-                className="w-full text-left px-3 py-2 hover:bg-emerald-50 dark:hover:bg-slate-800 transition"
-              >
-                <p className="font-bold truncate">{r.name || r.display_name}</p>
-                {r.address && <p className="text-[11px] text-slate-400 truncate">{r.address}</p>}
-              </button>
-            ))}
+          <div className="max-h-44 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+            {results.slice(0, 8).map((r, i) => {
+              const title = r.mainName || r.name || r.display_name || 'สถานที่';
+              const sub = r.subAddr || r.address || '';
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handlePickResult(r)}
+                  className="w-full text-left px-3 py-2 hover:bg-emerald-50 dark:hover:bg-slate-800 transition flex items-start justify-between gap-2"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-slate-800 dark:text-slate-100 truncate">{title}</p>
+                    {sub && <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{sub}</p>}
+                  </div>
+                  <div className="shrink-0 flex flex-col items-end gap-0.5 text-[10px]">
+                    {r.distStr && (
+                      <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap">
+                        {r.distStr}
+                      </span>
+                    )}
+                    {r.category && (
+                      <span className="text-slate-400 truncate max-w-[90px]">{r.category}</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {searchTouched && !searching && results.length === 0 && (
+          <div className="px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 text-[11px] text-amber-700 dark:text-amber-300">
+            ไม่พบสถานที่ที่ตรงกับคำค้นหา — สามารถแตะหรือลากหมุดบนแผนที่ด้านล่างได้โดยตรง
           </div>
         )}
 

@@ -33,8 +33,6 @@ const EMPTY_PERSON = {
   bureau: '',
   division: '',
   work_group: '',
-  phone: '',
-  email: '',
   autoCreateAccount: true,
 };
 
@@ -123,16 +121,17 @@ export default function PersonnelPage() {
   const posTypes = useMemo(() => SettingsModel.getUniquePositionTypes(settings), [settings]);
   const posTitles = useMemo(() => SettingsModel.getUniquePositionTitles(settings, form.position_type), [settings, form.position_type]);
   const posLevels = useMemo(() => SettingsModel.getUniquePositionLevels(settings, form.position_type, form.position_title), [settings, form.position_type, form.position_title]);
-  const bureaus = useMemo(() => SettingsModel.getUniqueBureaus(settings), [settings]);
-  const divisions = useMemo(() => SettingsModel.getUniqueDivisions(settings, form.bureau), [settings, form.bureau]);
-  const groups = useMemo(() => SettingsModel.getUniqueGroups(settings, form.bureau, form.division), [settings, form.bureau, form.division]);
+  const organizations = useMemo(() => SettingsModel.getUniqueOrganizations(settings), [settings]);
+  const bureaus = useMemo(() => SettingsModel.getUniqueBureaus(settings, form.organization), [settings, form.organization]);
+  const divisions = useMemo(() => SettingsModel.getUniqueDivisions(settings, form.bureau, form.organization), [settings, form.bureau, form.organization]);
+  const groups = useMemo(() => SettingsModel.getUniqueGroups(settings, form.bureau, form.division, form.organization), [settings, form.bureau, form.division, form.organization]);
 
   const groupHeaderColor = settings?.category_colors?.group_header || '#00744B';
 
   const openCreate = () => {
     setForm({
       ...EMPTY_PERSON,
-      organization: settings?.organization_name || 'กรุงเทพมหานคร',
+      organization: settings?.organization_name || organizations[0] || 'กรุงเทพมหานคร',
       bureau: user?.scope_bureau || settings?.bureau_name || '',
       division: user?.scope_division || '',
     });
@@ -149,12 +148,10 @@ export default function PersonnelPage() {
       position_type: p.position_type || '',
       position_title: p.position_title || '',
       position_level: p.position_level || '',
-      organization: p.organization || 'กรุงเทพมหานคร',
+      organization: p.organization || settings?.organization_name || 'กรุงเทพมหานคร',
       bureau: p.bureau || '',
       division: p.division || '',
       work_group: p.work_group || '',
-      phone: p.phone || '',
-      email: p.email || '',
       autoCreateAccount: false,
     });
     setModalOpen(true);
@@ -162,10 +159,22 @@ export default function PersonnelPage() {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    const cleanNid = String(form.national_id || '').replace(/\D/g, '');
+    if (!form.id && form.autoCreateAccount && cleanNid.length !== 13) {
+      await UIHelpers.alert('กรุณาระบุเลขบัตรประชาชน 13 หลัก', 'การสร้างบัญชีผู้ใช้อัตโนมัติต้องระบุหมายเลขบัตรประจำตัวประชาชนครบ 13 หลัก', 'warning');
+      return;
+    }
+    if (cleanNid.length > 0) {
+      const check = UIHelpers.validateThaiNationalId(cleanNid, false);
+      if (!check.valid) {
+        await UIHelpers.alert('เลขบัตรประชาชนไม่ถูกต้อง', check.message, 'warning');
+        return;
+      }
+    }
     setSaving(true);
     try {
       const payload = {
-        national_id: form.national_id.trim(),
+        national_id: cleanNid,
         prefix: form.prefix,
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
@@ -176,8 +185,6 @@ export default function PersonnelPage() {
         bureau: form.bureau,
         division: form.division,
         work_group: form.work_group,
-        phone: form.phone,
-        email: form.email,
       };
       const res = form.id
         ? await PersonnelModel.update(form.id, payload)
@@ -721,31 +728,61 @@ export default function PersonnelPage() {
           </>
         }
       >
-        <form id="formPersonnel" onSubmit={handleSave} className="space-y-3.5 text-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div><label className="block text-xs font-bold mb-1">เลขประจำตัวประชาชน 13 หลัก *</label><input type="text" required maxLength={13} value={form.national_id} onChange={(e) => setForm({ ...form, national_id: e.target.value.replace(/\D/g, '') })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 font-mono text-sm" /></div>
-            <div><label className="block text-xs font-bold mb-1">คำนำหน้า</label><select value={form.prefix} onChange={(e) => setForm({ ...form, prefix: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">{(settings?.prefixes || ['นาย', 'นาง', 'นางสาว']).map((px) => <option key={px} value={px}>{px}</option>)}</select></div>
-            <div><label className="block text-xs font-bold mb-1">ชื่อ *</label><input type="text" required value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" /></div>
+        <form id="formPersonnel" onSubmit={handleSave} className="space-y-4 text-sm">
+          {/* แถว 1: ข้อมูลส่วนตัว (ตรง personnel.html:291-304) */}
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+            <div className="sm:col-span-3">
+              <label className="block text-xs font-bold mb-1">คำนำหน้าชื่อ *</label>
+              <select required value={form.prefix} onChange={(e) => setForm({ ...form, prefix: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                {(settings?.prefixes || ['นาย', 'นาง', 'นางสาว']).map((px) => <option key={px} value={px}>{px}</option>)}
+              </select>
+            </div>
+            <div className="sm:col-span-4">
+              <label className="block text-xs font-bold mb-1">ชื่อจริง *</label>
+              <input type="text" required placeholder="ระบุชื่อจริง" value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </div>
+            <div className="sm:col-span-5">
+              <label className="block text-xs font-bold mb-1">นามสกุล *</label>
+              <input type="text" required placeholder="ระบุนามสกุล" value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div><label className="block text-xs font-bold mb-1">นามสกุล *</label><input type="text" required value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" /></div>
-            <div><label className="block text-xs font-bold mb-1">เบอร์โทรศัพท์</label><input type="text" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" /></div>
+
+          {/* แถว 2: หมายเลขบัตรประจำตัวประชาชน 13 หลัก (บังคับเฉพาะเมื่อติ๊กสร้างบัญชีอัตโนมัติ) */}
+          <div>
+            <label className="block text-xs font-bold mb-1">
+              หมายเลขบัตรประจำตัวประชาชน (13 หลัก){!form.id && form.autoCreateAccount ? ' *' : ''}
+            </label>
+            <input
+              type="text"
+              required={!form.id && form.autoCreateAccount}
+              maxLength={13}
+              placeholder="ระบุเลขบัตรประชาชน 13 หลัก (ระบบตรวจสอบความถูกต้องอัตโนมัติ)"
+              value={form.national_id}
+              onChange={(e) => setForm({ ...form, national_id: e.target.value.replace(/\D/g, '') })}
+              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 font-mono tracking-wider text-sm"
+            />
+            {cleanNidPreview.length > 0 && (() => {
+              const check = UIHelpers.validateThaiNationalId(cleanNidPreview, false);
+              return (
+                <p className={`text-xs mt-1 font-semibold ${check.valid ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                  <i className={`fa-solid ${check.valid ? 'fa-circle-check' : 'fa-circle-exclamation'} mr-1`} />
+                  {check.valid ? 'หมายเลขบัตรประจำตัวประชาชน 13 หลักถูกต้อง' : check.message}
+                </p>
+              );
+            })()}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div><label className="block text-xs font-bold mb-1">ประเภทตำแหน่ง</label><select value={form.position_type} onChange={(e) => setForm({ ...form, position_type: e.target.value, position_title: '', position_level: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"><option value="">-- เลือก --</option>{posTypes.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
-            <div><label className="block text-xs font-bold mb-1">ตำแหน่ง</label><select value={form.position_title} onChange={(e) => setForm({ ...form, position_title: e.target.value, position_level: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"><option value="">-- เลือก --</option>{posTitles.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
-            <div><label className="block text-xs font-bold mb-1">ระดับ</label><select value={form.position_level} onChange={(e) => setForm({ ...form, position_level: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"><option value="">-- เลือก --</option>{posLevels.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div><label className="block text-xs font-bold mb-1">สำนักงาน / กอง</label><select value={form.bureau} onChange={(e) => setForm({ ...form, bureau: e.target.value, division: '', work_group: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"><option value="">-- เลือก --</option>{bureaus.map((b) => <option key={b} value={b}>{b}</option>)}</select></div>
-            <div><label className="block text-xs font-bold mb-1">ส่วน / ฝ่าย</label><select value={form.division} onChange={(e) => setForm({ ...form, division: e.target.value, work_group: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"><option value="">-- เลือก --</option>{divisions.map((d) => <option key={d} value={d}>{d}</option>)}</select></div>
-            <div><label className="block text-xs font-bold mb-1">กลุ่มงาน</label><select value={form.work_group} onChange={(e) => setForm({ ...form, work_group: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"><option value="">-- เลือก --</option>{groups.map((g) => <option key={g} value={g}>{g}</option>)}</select></div>
-          </div>
+
+          {/* แถว 3: กล่องติ๊กถูก "เพิ่มบัญชีผู้ใช้อัตโนมัติ" */}
           {!form.id && (
-            <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 space-y-2">
-              <label className="inline-flex items-center gap-2 text-xs font-bold cursor-pointer">
-                <input type="checkbox" checked={form.autoCreateAccount} onChange={(e) => setForm({ ...form, autoCreateAccount: e.target.checked })} />
-                <span>สร้างบัญชีเข้าใช้งานอัตโนมัติ (รหัสผ่าน = 6 หลักท้ายเลขบัตรประชาชน)</span>
+            <div className="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50 space-y-2">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 accent-[#00744B] mt-0.5 shrink-0 rounded" checked={form.autoCreateAccount} onChange={(e) => setForm({ ...form, autoCreateAccount: e.target.checked })} />
+                <div className="text-xs">
+                  <span className="font-bold text-[#00744B] dark:text-emerald-300 block">เพิ่มบัญชีผู้ใช้อัตโนมัติ (Role: User - ป้ายสีเขียวพาสเทล)</span>
+                  <span className="text-slate-600 dark:text-slate-400 block mt-0.5 leading-relaxed">
+                    ระบบจะสร้างบัญชีผู้ใช้งานให้อัตโนมัติโดยใช้ <b>Username = หมายเลขบัตรประชาชน 13 หลัก</b> และ <b>Password = หมายเลข 6 ตัวท้ายของบัตรประชาชน</b>
+                  </span>
+                </div>
               </label>
               {form.autoCreateAccount && cleanNidPreview.length === 13 && (
                 <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 text-xs font-mono flex flex-wrap items-center justify-between gap-2">
@@ -755,6 +792,73 @@ export default function PersonnelPage() {
               )}
             </div>
           )}
+
+          {/* แถว 4: ข้อมูลตำแหน่ง 3 ช่อง */}
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2.5">
+              <i className="fa-solid fa-briefcase mr-1 text-[#00744B]" />ข้อมูลตำแหน่ง (ดึงจากตั้งค่าระบบ)
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-bold mb-1">ประเภทตำแหน่ง *</label>
+                <select required value={form.position_type} onChange={(e) => setForm({ ...form, position_type: e.target.value, position_title: '', position_level: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                  <option value="">-- เลือก --</option>
+                  {posTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">ตำแหน่งในสายงาน *</label>
+                <select required value={form.position_title} onChange={(e) => setForm({ ...form, position_title: e.target.value, position_level: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                  <option value="">-- เลือก --</option>
+                  {posTitles.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">ระดับตำแหน่ง *</label>
+                <select required value={form.position_level} onChange={(e) => setForm({ ...form, position_level: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                  <option value="">-- เลือก --</option>
+                  {posLevels.map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* แถว 5: ข้อมูลสังกัด 4 ช่อง (Grid 2×2 ครบ 4 ระดับ) */}
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2.5">
+              <i className="fa-solid fa-sitemap mr-1 text-[#00744B]" />ข้อมูลสังกัด (ดึงจากตั้งค่าระบบ)
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold mb-1">หน่วยงาน *</label>
+                <select required value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value, bureau: '', division: '', work_group: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                  <option value="">-- เลือก --</option>
+                  {organizations.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">สำนักงาน/กอง *</label>
+                <select required value={form.bureau} onChange={(e) => setForm({ ...form, bureau: e.target.value, division: '', work_group: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                  <option value="">-- เลือก --</option>
+                  {bureaus.map((b) => <option key={b} value={b}>{b}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">ส่วน/ฝ่าย *</label>
+                <select required value={form.division} onChange={(e) => setForm({ ...form, division: e.target.value, work_group: '' })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                  <option value="">-- เลือก --</option>
+                  {divisions.map((d) => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">กลุ่มงาน *</label>
+                <select required value={form.work_group} onChange={(e) => setForm({ ...form, work_group: e.target.value })} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                  <option value="">-- เลือก --</option>
+                  {groups.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
         </form>
       </ResponsiveModal>
 
@@ -817,12 +921,10 @@ export default function PersonnelPage() {
             <dl className="grid grid-cols-2 gap-3 text-xs bg-slate-50 dark:bg-slate-800/70 rounded-xl p-4">
               <div><dt className="text-slate-400">เลขบัตรประชาชน (PDPA)</dt><dd className="font-mono font-bold mt-0.5">{maskNationalIdPDPA(resumePerson.national_id)}</dd></div>
               <div><dt className="text-slate-400">ประเภทตำแหน่ง</dt><dd className="font-bold mt-0.5">{resumePerson.position_type || '-'}</dd></div>
-              <div><dt className="text-slate-400">องค์กร</dt><dd className="font-bold mt-0.5">{resumePerson.organization || 'กรุงเทพมหานคร'}</dd></div>
+              <div><dt className="text-slate-400">หน่วยงาน</dt><dd className="font-bold mt-0.5">{resumePerson.organization || 'กรุงเทพมหานคร'}</dd></div>
               <div><dt className="text-slate-400">สำนักงาน / กอง</dt><dd className="font-bold mt-0.5">{resumePerson.bureau || '-'}</dd></div>
               <div><dt className="text-slate-400">ส่วน / ฝ่าย</dt><dd className="font-bold mt-0.5">{resumePerson.division || '-'}</dd></div>
               <div><dt className="text-slate-400">กลุ่มงาน</dt><dd className="font-bold mt-0.5">{resumePerson.work_group && resumePerson.work_group !== 'ไม่มี' ? resumePerson.work_group : '-'}</dd></div>
-              <div><dt className="text-slate-400">โทรศัพท์</dt><dd className="font-bold mt-0.5">{resumePerson.phone || '-'}</dd></div>
-              <div><dt className="text-slate-400">อีเมล</dt><dd className="font-bold mt-0.5">{resumePerson.email || '-'}</dd></div>
             </dl>
           </div>
         )}

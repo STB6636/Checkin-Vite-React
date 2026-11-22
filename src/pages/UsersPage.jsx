@@ -24,7 +24,6 @@ const EMPTY_FORM = {
   visibility_level: 'division',
   scope_bureau: '',
   scope_division: '',
-  is_active: true,
 };
 
 function getUserScopeDescription(u) {
@@ -175,7 +174,6 @@ export default function UsersPage() {
       visibility_level: u.visibility_level === 'bureau' ? 'bureau' : 'division',
       scope_bureau: u.scope_bureau || u.personnel?.bureau || '',
       scope_division: u.scope_division || u.personnel?.division || '',
-      is_active: u.is_active !== false,
     });
     setModalOpen(true);
   };
@@ -223,7 +221,6 @@ export default function UsersPage() {
             : 'none',
         scope_bureau: form.scope_bureau || null,
         scope_division: form.visibility_level === 'bureau' ? '' : (form.scope_division || null),
-        is_active: form.is_active,
       };
       if (form.password.trim()) {
         payload.password = form.password.trim();
@@ -807,24 +804,24 @@ export default function UsersPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold mb-1">ชื่อบัญชีผู้ใช้งาน (Username) *</label>
-            <input
-              type="text"
-              required
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-mono font-bold"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold mb-1">
-                {form.id ? 'รหัสผ่านใหม่ (เว้นว่างถ้าไม่เปลี่ยน)' : 'รหัสผ่าน (Password) *'}
-              </label>
+              <label className="block text-xs font-bold mb-1">Username *</label>
               <input
                 type="text"
+                required
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-mono font-bold"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">
+                {form.id ? 'Password ใหม่ (เว้นว่างถ้าไม่เปลี่ยน)' : 'Password *'}
+              </label>
+              <input
+                type="password"
+                autoComplete="new-password"
                 required={!form.id}
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -836,7 +833,8 @@ export default function UsersPage() {
                 {form.id ? 'ยืนยันรหัสผ่านใหม่' : 'ยืนยันรหัสผ่าน *'}
               </label>
               <input
-                type="text"
+                type="password"
+                autoComplete="new-password"
                 required={!form.id || Boolean(form.password)}
                 value={form.confirmPassword}
                 onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
@@ -956,11 +954,6 @@ export default function UsersPage() {
               </div>
             </div>
           )}
-
-          <label className="inline-flex items-center gap-2 text-xs font-bold cursor-pointer">
-            <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
-            <span>เปิดใช้งานบัญชีนี้</span>
-          </label>
         </form>
       </ResponsiveModal>
     </AdminLayout>
