@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext.jsx';
 import { SettingsProvider } from './contexts/SettingsContext.jsx';
 import { UIProvider } from './contexts/UIContext.jsx';
 import { ProtectedRoute } from './components/layout/ProtectedRoute.jsx';
+import { AdminShell } from './components/layout/AdminLayout.jsx';
 
 // Route-based Code Splitting (React.lazy) — keeps Login/Loading initial load ultra-fast
 const LoginPage = lazy(() => import('./pages/LoginPage.jsx'));
@@ -50,62 +51,36 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+                  {/* Persistent Admin SPA Shell — keeps Sidebar, Topbar, Bottom Nav & Footer mounted 100% permanently */}
                   <Route
-                    path="/dashboard"
                     element={
                       <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}>
-                        <DashboardPage />
+                        <AdminShell />
                       </ProtectedRoute>
                     }
-                  />
-                  <Route
-                    path="/approvals"
-                    element={
-                      <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}>
-                        <ApprovalsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/time-corrections"
-                    element={
-                      <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}>
-                        <TimeCorrectionsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/reports"
-                    element={
-                      <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}>
-                        <ReportsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/personnel"
-                    element={
-                      <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}>
-                        <PersonnelPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/users"
-                    element={
-                      <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']} requireUsersMenu>
-                        <UsersPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/settings"
-                    element={
-                      <ProtectedRoute allowedRoles={['SuperAdmin']}>
-                        <SettingsPage />
-                      </ProtectedRoute>
-                    }
-                  />
+                  >
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/approvals" element={<ApprovalsPage />} />
+                    <Route path="/time-corrections" element={<TimeCorrectionsPage />} />
+                    <Route path="/reports" element={<ReportsPage />} />
+                    <Route path="/personnel" element={<PersonnelPage />} />
+                    <Route
+                      path="/users"
+                      element={
+                        <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']} requireUsersMenu>
+                          <UsersPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/settings"
+                      element={
+                        <ProtectedRoute allowedRoles={['SuperAdmin']}>
+                          <SettingsPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Route>
 
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

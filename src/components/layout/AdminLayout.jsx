@@ -1,5 +1,15 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  useRef,
+  useMemo,
+  Suspense,
+} from 'react';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useSettings } from '../../contexts/SettingsContext.jsx';
 import { useTheme } from '../../contexts/ThemeContext.jsx';
@@ -10,14 +20,101 @@ import { UserModel } from '../../models/UserModel.js';
 import { UIHelpers } from '../../core/UIHelpers.js';
 import { SystemUpdateModal } from './SystemUpdateModal.jsx';
 
+export const AdminLayoutContext = createContext(null);
+
+export const ROUTE_META_MAP = {
+  '/dashboard': {
+    activePage: 'dashboard',
+    title: 'ภาพรวมการลงเวลาปฏิบัติราชการ',
+    subtitle: '',
+  },
+  '/reports': {
+    activePage: 'reports',
+    title: 'รายงานการลงเวลาปฏิบัติราชการ',
+    subtitle: 'รายงาน 5 หมวดหมู่ แยกตารางตาม TAG สถานะ พิกัด GPS แยกเข้า-ออก พร้อมส่งออก Excel และพิมพ์ PDF แนวนอน A4',
+  },
+  '/approvals': {
+    activePage: 'approvals',
+    title: 'อนุมัติคำขอลงเวลากรณีพิเศษ',
+    subtitle: 'พิจารณาคำขอลงเวลานอกสถานที่ / กรณีพิเศษในขอบเขตสังกัด',
+  },
+  '/time-corrections': {
+    activePage: 'time-corrections',
+    title: 'อนุมัติคำขอแก้ไขเวลาเข้า-ออกงาน',
+    subtitle: 'ปรับเฉพาะขาที่ผิดปกติพร้อม Double-Layer Executive RBAC (ADR-0039)',
+  },
+  '/personnel': {
+    activePage: 'personnel',
+    title: 'จัดการข้อมูลบุคลากร',
+    subtitle: '',
+  },
+  '/users': {
+    activePage: 'users',
+    title: 'จัดการบัญชีผู้ใช้งานและสิทธิ์การเข้าถึง',
+    subtitle: '',
+  },
+  '/settings': {
+    activePage: 'settings',
+    title: 'ตั้งค่าระบบ (SuperAdmin)',
+    subtitle: 'จัดการข้อมูลหน่วยงาน กะเวลา โครงสร้างองค์กร พิกัดสถานที่ และประกาศระบบ (7 แท็บตามต้นฉบับ)',
+  },
+};
+
 /**
- * Native React Admin Layout Shell — 100% Parity with legacy AppLayout.js + Option A Quick Nav Search
- * - Sidebar w-72, bg-[#111827] dark:bg-[#0B132B], org -> bureau order, Avatar Capsule, Section Heading
- * - Exact 7-item menu order: ภาพรวม -> รายงาน -> อนุมัติพิเศษ -> แก้ไขเวลา -> บุคลากร -> ผู้ใช้งาน -> ตั้งค่า
- * - Topbar: fa-bars-staggered, House icon breadcrumb, Working Quick Navigation Search, Bell with 4-item Previews, Theme Pill with label
- * - Mobile Bottom Nav (no active pill bg) & Centered .bma-footer-bar on all viewports
+ * AdminMainSkeleton — 100% Visual Parity with legacy AppLayout.renderMainSkeleton() (AppLayout.js:224-262)
+ * Renders ONLY inside <main> during lazy chunk transitions while Sidebar, Topbar, Bottom Nav & Footer stay persistent.
  */
-export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', onRealtimeSync, children }) {
+export function AdminMainSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* Floating Header Skeleton */}
+      <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-700/60 mt-8 mb-6 p-6">
+        <div className="-mt-12 mx-2 rounded-2xl p-5 bg-slate-200 dark:bg-slate-700 bma-skeleton-shimmer h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-slate-300 dark:bg-slate-600" />
+            <div className="space-y-2">
+              <div className="w-48 h-4 rounded-md bg-slate-300 dark:bg-slate-600" />
+              <div className="w-72 h-3 rounded-md bg-slate-300 dark:bg-slate-600 hidden sm:block" />
+            </div>
+          </div>
+          <div className="hidden sm:flex gap-2">
+            <div className="w-28 h-9 rounded-xl bg-slate-300 dark:bg-slate-600" />
+            <div className="w-28 h-9 rounded-xl bg-slate-300 dark:bg-slate-600" />
+          </div>
+        </div>
+
+        {/* Filters Skeleton */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="h-10 rounded-xl bg-slate-100 dark:bg-slate-700/50 bma-skeleton-shimmer" />
+          <div className="h-10 rounded-xl bg-slate-100 dark:bg-slate-700/50 bma-skeleton-shimmer" />
+          <div className="h-10 rounded-xl bg-slate-100 dark:bg-slate-700/50 bma-skeleton-shimmer" />
+        </div>
+
+        {/* Table Rows Skeleton */}
+        <div className="mt-6 space-y-3">
+          <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-700/60 bma-skeleton-shimmer" />
+          <div className="h-14 rounded-xl bg-slate-50 dark:bg-slate-800/60 bma-skeleton-shimmer" />
+          <div className="h-14 rounded-xl bg-slate-50 dark:bg-slate-800/60 bma-skeleton-shimmer" />
+          <div className="h-14 rounded-xl bg-slate-50 dark:bg-slate-800/60 bma-skeleton-shimmer" />
+          <div className="h-14 rounded-xl bg-slate-50 dark:bg-slate-800/60 bma-skeleton-shimmer" />
+          <div className="h-14 rounded-xl bg-slate-50 dark:bg-slate-800/60 bma-skeleton-shimmer" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Persistent Admin SPA Shell — keeps Sidebar, Topbar, Mobile Bottom Nav, Footer, Notification Bell,
+ * and Tri-Layer Realtime Sync mounted 100% permanently across all 7 Admin routes (AppLayout.js parity).
+ */
+export function AdminShell({
+  defaultTitle = '',
+  defaultSubtitle = '',
+  defaultActivePage = 'dashboard',
+  defaultOnRealtimeSync = null,
+  children,
+}) {
   const { user, isSuperAdmin, canViewUsersMenu, scopeLabel, logout } = useAuth();
   const { settings } = useSettings();
   const { isDark, toggleTheme } = useTheme();
@@ -31,6 +128,14 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
   const bellRef = useRef(null);
   const quickRef = useRef(null);
 
+  const [headerOverride, setHeaderOverride] = useState({
+    path: '',
+    title: defaultTitle,
+    subtitle: defaultSubtitle,
+    activePage: defaultActivePage,
+  });
+  const realtimeSyncRef = useRef(defaultOnRealtimeSync);
+
   const [counts, setCounts] = useState({
     specialRequests: 0,
     timeCorrections: 0,
@@ -40,6 +145,27 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
   });
 
   const { versionInfo, showUpdateModal, openUpdateModal, dismissModal } = useSystemUpdateCheck(settings);
+
+  const routeDefault = ROUTE_META_MAP[location.pathname] || {
+    activePage: defaultActivePage || 'dashboard',
+    title: defaultTitle || 'ภาพรวมการลงเวลาปฏิบัติราชการ',
+    subtitle: defaultSubtitle || '',
+  };
+
+  const isOverrideForCurrentPath = headerOverride.path === location.pathname;
+  const title = isOverrideForCurrentPath && headerOverride.title ? headerOverride.title : routeDefault.title;
+  const subtitle =
+    isOverrideForCurrentPath && headerOverride.subtitle !== undefined
+      ? headerOverride.subtitle
+      : routeDefault.subtitle;
+  const activePage =
+    isOverrideForCurrentPath && headerOverride.activePage ? headerOverride.activePage : routeDefault.activePage;
+
+  useEffect(() => {
+    if (title) {
+      document.title = `${title} - กรุงเทพมหานคร`;
+    }
+  }, [title]);
 
   useEffect(() => {
     const cleanRoute = location.pathname.replace(/^\/+/, '');
@@ -56,6 +182,26 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
         UIHelpers.showToast(`ยินดีต้อนรับ ${welcomeName}`, 'success', 2800);
       }
     } catch (_) {}
+  }, []);
+
+  // Background Idle Preload of all 7 Admin page chunks so switching menus is 0ms instantaneous
+  useEffect(() => {
+    const preloadChunks = () => {
+      import('../../pages/DashboardPage.jsx').catch(() => {});
+      import('../../pages/ReportsPage.jsx').catch(() => {});
+      import('../../pages/ApprovalsPage.jsx').catch(() => {});
+      import('../../pages/TimeCorrectionsPage.jsx').catch(() => {});
+      import('../../pages/PersonnelPage.jsx').catch(() => {});
+      import('../../pages/UsersPage.jsx').catch(() => {});
+      import('../../pages/SettingsPage.jsx').catch(() => {});
+    };
+
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      const idleId = window.requestIdleCallback(preloadChunks, { timeout: 1200 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+    const timer = setTimeout(preloadChunks, 300);
+    return () => clearTimeout(timer);
   }, []);
 
   const refreshNotifications = useCallback(async () => {
@@ -84,7 +230,9 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
     enabled: Boolean(user),
     onSync: (reason) => {
       refreshNotifications();
-      if (typeof onRealtimeSync === 'function') onRealtimeSync(reason);
+      if (typeof realtimeSyncRef.current === 'function') {
+        realtimeSyncRef.current(reason);
+      }
     },
   });
 
@@ -97,11 +245,50 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
     return () => document.removeEventListener('mousedown', onDown);
   }, [bellOpen, quickOpen]);
 
+  const setHeaderMeta = useCallback((meta) => {
+    setHeaderOverride((prev) => {
+      if (
+        prev.path === meta.path &&
+        prev.title === meta.title &&
+        prev.subtitle === meta.subtitle &&
+        prev.activePage === meta.activePage
+      ) {
+        return prev;
+      }
+      return meta;
+    });
+  }, []);
+
+  const registerRealtimeSync = useCallback((fn) => {
+    realtimeSyncRef.current = fn;
+    return () => {
+      if (realtimeSyncRef.current === fn) {
+        realtimeSyncRef.current = null;
+      }
+    };
+  }, []);
+
+  const shellContextValue = useMemo(
+    () => ({
+      setHeaderMeta,
+      registerRealtimeSync,
+      refreshNotifications,
+    }),
+    [setHeaderMeta, registerRealtimeSync, refreshNotifications]
+  );
+
   const handleLogout = async () => {
     const ok = await UIHelpers.confirm('ออกจากระบบ', 'คุณต้องการออกจากระบบผู้ดูแลใช่หรือไม่?', 'ออกจากระบบ', 'warning');
     if (!ok) return;
     logout();
     navigate('/', { replace: true });
+  };
+
+  const handleNavLinkClick = (e, targetTo) => {
+    setMobileMenuOpen(false);
+    if (location.pathname === targetTo) {
+      e.preventDefault();
+    }
   };
 
   // Exact original 7-item order from AppLayout.js
@@ -127,7 +314,7 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
 
   const totalPending = counts.specialRequests + counts.timeCorrections + counts.passwordResets;
   const yearBuddhist = new Date().getFullYear() + 543;
-  const logoUrl = settings?.logo_url ? (UIHelpers.verifyImageUrl(settings.logo_url)?.url || settings.logo_url) : '';
+  const logoUrl = settings?.logo_url || '';
   const initials = (user?.full_name || user?.username || 'A').trim().slice(0, 2);
 
   const renderSidebarContent = () => (
@@ -182,7 +369,7 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
           <NavLink
             key={item.id}
             to={item.to}
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(e) => handleNavLinkClick(e, item.to)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold transition ${
                 isActive || activePage === item.id
@@ -331,7 +518,9 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
                           onClick={() => {
                             setQuickOpen(false);
                             setQuickQuery('');
-                            navigate(item.to);
+                            if (location.pathname !== item.to) {
+                              navigate(item.to);
+                            }
                           }}
                           className="w-full text-left px-2.5 py-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-800 flex items-center gap-2.5 text-xs font-semibold transition"
                         >
@@ -481,10 +670,14 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
           </div>
         </header>
 
-        {/* Page Body */}
-        <main className="flex-1 p-4 sm:p-6 max-w-[1600px] w-full mx-auto">
-          {children}
-        </main>
+        {/* Page Body — inner Suspense shows AdminMainSkeleton ONLY inside <main> while shell stays persistent */}
+        <AdminLayoutContext.Provider value={shellContextValue}>
+          <main className="flex-1 p-4 sm:p-6 max-w-[1600px] w-full mx-auto">
+            <Suspense fallback={<AdminMainSkeleton />}>
+              {children || <Outlet />}
+            </Suspense>
+          </main>
+        </AdminLayoutContext.Provider>
 
         {/* Original Centered .bma-footer-bar (All Viewports) */}
         <footer className="bma-footer-bar text-center px-4 py-3 text-xs border-t border-slate-200/70 dark:border-slate-800 mt-auto">
@@ -504,6 +697,7 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
           <NavLink
             key={item.id}
             to={item.to}
+            onClick={(e) => handleNavLinkClick(e, item.to)}
             className={({ isActive }) =>
               `relative flex flex-col items-center justify-center px-1 py-1 text-[10px] font-bold transition min-w-0 flex-1 ${
                 isActive || activePage === item.id
@@ -525,5 +719,45 @@ export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', on
 
       <SystemUpdateModal open={showUpdateModal} onClose={dismissModal} settings={settings} versionInfo={versionInfo} />
     </div>
+  );
+}
+
+/**
+ * AdminLayout — Lightweight Page-to-Shell Bridge
+ * When rendered inside <AdminShell /> (all 7 Admin routes), it syncs title, subtitle, activePage,
+ * and onRealtimeSync into the persistent shell without re-mounting the Sidebar, Topbar, Bottom Nav, or Footer.
+ */
+export function AdminLayout({ title, subtitle = '', activePage = 'dashboard', onRealtimeSync, children }) {
+  const shellCtx = useContext(AdminLayoutContext);
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    if (!shellCtx) return;
+    shellCtx.setHeaderMeta({
+      path: location.pathname,
+      title,
+      subtitle,
+      activePage,
+    });
+  }, [shellCtx, location.pathname, title, subtitle, activePage]);
+
+  useEffect(() => {
+    if (!shellCtx) return undefined;
+    return shellCtx.registerRealtimeSync(onRealtimeSync);
+  }, [shellCtx, onRealtimeSync]);
+
+  if (shellCtx) {
+    return <>{children}</>;
+  }
+
+  return (
+    <AdminShell
+      defaultTitle={title}
+      defaultSubtitle={subtitle}
+      defaultActivePage={activePage}
+      defaultOnRealtimeSync={onRealtimeSync}
+    >
+      {children}
+    </AdminShell>
   );
 }

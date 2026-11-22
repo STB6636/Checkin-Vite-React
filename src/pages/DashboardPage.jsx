@@ -6,7 +6,9 @@ import { OrgHierarchyFilter } from '../components/common/OrgHierarchyFilter.jsx'
 import { PaginationBar } from '../components/common/PaginationBar.jsx';
 import { ResponsiveModal } from '../components/common/ResponsiveModal.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { useSettings } from '../contexts/SettingsContext.jsx';
 import { AttendanceModel } from '../models/AttendanceModel.js';
+import { Config } from '../core/Config.js';
 import { UIHelpers } from '../core/UIHelpers.js';
 
 const STATUS_BADGE = {
@@ -34,6 +36,7 @@ const KPI_ICON_BOX = {
  */
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { settings } = useSettings();
   const navigate = useNavigate();
 
   const [workDate, setWorkDate] = useState(UIHelpers.getTodayISO());
@@ -63,6 +66,11 @@ export default function DashboardPage() {
     loadData(false);
   }, [loadData]);
 
+  const colors = useMemo(() => ({
+    ...Config.DEFAULT_SETTINGS.category_colors,
+    ...(settings?.category_colors || {}),
+  }), [settings]);
+
   const orgFiltered = useMemo(() => {
     return records.filter((r) => {
       if (orgFilter.bureau && r.bureau !== orgFilter.bureau) return false;
@@ -74,7 +82,7 @@ export default function DashboardPage() {
 
   const metrics = useMemo(() => AttendanceModel.calculateDashboardMetrics(orgFiltered), [orgFiltered]);
 
-  const filtered = useMemo(() => {
+  const filteredRecords = useMemo(() => {
     const q = search.trim().toLowerCase();
     return orgFiltered.filter((r) => {
       if (statusFilter !== 'all') {
@@ -85,28 +93,42 @@ export default function DashboardPage() {
         }
       }
       if (q) {
-        const hay = `${r.full_name || ''} ${r.position || ''} ${r.division || ''} ${r.work_group || ''} ${r.remark || ''}`.toLowerCase();
+        const hay = `${r.full_name || ''} ${r.position_full || r.position || ''} ${r.bureau || ''} ${r.division || ''} ${r.work_group || ''} ${r.remark || ''}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
   }, [orgFiltered, statusFilter, search]);
 
+  const checkedInRecords = useMemo(() => {
+    const list = filteredRecords.filter((rec) => Boolean(rec.log_id));
+    list.sort((a, b) => {
+      const tA = new Date(a.updated_at || a.created_at || 0).getTime();
+      const tB = new Date(b.updated_at || b.created_at || 0).getTime();
+      if (tB !== tA) return tB - tA;
+      const outCmp = String(b.check_out_time || '').localeCompare(String(a.check_out_time || ''));
+      if (outCmp !== 0) return outCmp;
+      return String(b.check_in_time || '').localeCompare(String(a.check_in_time || ''));
+    });
+    return list;
+  }, [filteredRecords]);
+
   const paginated = useMemo(() => {
     const start = (page - 1) * pageSize;
-    return filtered.slice(start, start + pageSize);
-  }, [filtered, page, pageSize]);
+    return checkedInRecords.slice(start, start + pageSize);
+  }, [checkedInRecords, page, pageSize]);
 
   useEffect(() => {
     setPage(1);
   }, [workDate, orgFilter, statusFilter, search]);
 
   const handleExportExcel = async () => {
-    const exportRows = filtered.map((r, idx) => ({
+    const exportRows = checkedInRecords.map((r, idx) => ({
       'ลำดับ': idx + 1,
       'วันที่': UIHelpers.formatThaiShortDate(r.work_date || workDate),
       'ชื่อ-สกุล': r.full_name || '-',
-      'ตำแหน่ง': UIHelpers.formatPosition(r.position_title, r.position_level, r.position_type, r.position),
+      'ตำแหน่ง': UIHelpers.formatPosition(r.position_title, r.position_level, r.position_type, r.position_full || r.position),
+      'สำนักงาน/กอง': r.bureau || '-',
       'ส่วน/ฝ่าย': r.division || '-',
       'กะ/ช่วงเวลา': r.shift_name || '-',
       'เวลาเข้า': r.check_in_time || '-',
@@ -162,7 +184,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 5 .material-stat-card KPI Cards with Floating Top-Left Icon Box & Right-Aligned Numbers */}
+      {/* 5 .material-stat-card KPI Cards with Floating Top-Left Icon Box, Right-Aligned Numbers & Progress Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <button
           type="button"
@@ -176,31 +198,45 @@ export default function DashboardPage() {
           </div>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">บุคลากรทั้งหมด</p>
           <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight mt-0.5">{metrics.total}</p>
-          <p className="text-[11px] text-slate-400 mt-1 border-t border-slate-100 dark:border-slate-800 pt-1.5 text-left">
-            บันทึกวันนี้ {orgFiltered.length} รายการ
-          </p>
+          <div className="mt-2 border-t border-slate-100 dark:border-slate-800 pt-1.5 space-y-1">
+            <div className="flex items-center justify-between text-[11px] font-bold">
+              <span className="text-slate-500 dark:text-slate-400">สัดส่วนรวม</span>
+              <span className="text-[#00744B] dark:text-[#00C08A]">100%</span>
+            </div>
+            <div className="stat-progress-track w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+              <div className="stat-progress-fill h-full rounded-full" style={{ width: '100%', backgroundColor: '#00744B' }} />
+            </div>
+          </div>
         </button>
 
-        {metrics.categories.map((cat) => (
-          <button
-            key={cat.key}
-            type="button"
-            onClick={() => setStatusFilter((prev) => (prev === cat.key ? 'all' : cat.key))}
-            className={`material-stat-card relative text-right p-4 pt-3 rounded-2xl bg-white dark:bg-slate-900 border transition shadow-sm ${
-              statusFilter === cat.key ? 'border-[#00744B] ring-2 ring-emerald-500/20' : 'border-slate-200 dark:border-slate-800'
-            }`}
-          >
-            <div className={`material-stat-icon-box -mt-7 w-12 h-12 rounded-2xl bg-gradient-to-br ${KPI_ICON_BOX[cat.key] || KPI_ICON_BOX.normal} text-white shadow-lg flex items-center justify-center`}>
-              <i className={`fa-solid ${cat.icon} text-lg`} />
-            </div>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">{cat.label}</p>
-            <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight mt-0.5">{cat.count}</p>
-            <div className="mt-1 border-t border-slate-100 dark:border-slate-800 pt-1.5 flex items-center justify-between text-[11px]">
-              <span className="font-bold" style={{ color: cat.color }}>{cat.percent}%</span>
-              <span className="text-slate-400">ของทั้งหมด</span>
-            </div>
-          </button>
-        ))}
+        {metrics.categories.map((cat) => {
+          const barColor = colors[cat.key] || cat.color || '#00744B';
+          return (
+            <button
+              key={cat.key}
+              type="button"
+              onClick={() => setStatusFilter((prev) => (prev === cat.key ? 'all' : cat.key))}
+              className={`material-stat-card relative text-right p-4 pt-3 rounded-2xl bg-white dark:bg-slate-900 border transition shadow-sm ${
+                statusFilter === cat.key ? 'border-[#00744B] ring-2 ring-emerald-500/20' : 'border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div className={`material-stat-icon-box -mt-7 w-12 h-12 rounded-2xl bg-gradient-to-br ${KPI_ICON_BOX[cat.key] || KPI_ICON_BOX.normal} text-white shadow-lg flex items-center justify-center`}>
+                <i className={`fa-solid ${cat.icon} text-lg`} />
+              </div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 truncate">{cat.label}</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight mt-0.5">{cat.count}</p>
+              <div className="mt-2 border-t border-slate-100 dark:border-slate-800 pt-1.5 space-y-1">
+                <div className="flex items-center justify-between text-[11px] font-bold">
+                  <span className="text-slate-500 dark:text-slate-400">คิดเป็นร้อยละ</span>
+                  <span style={{ color: barColor }}>{cat.percent}%</span>
+                </div>
+                <div className="stat-progress-track w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div className="stat-progress-fill h-full rounded-full transition-all" style={{ width: `${cat.percent}%`, backgroundColor: barColor }} />
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Card with Floating Emerald Header (-mt-6) */}
@@ -208,10 +244,10 @@ export default function DashboardPage() {
         <div className="-mt-5 mx-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-[#00351B] via-[#00744B] to-[#00A368] text-white shadow-lg flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-extrabold text-sm sm:text-base flex items-center gap-2">
-              <i className="fa-solid fa-table-list" />
-              <span>ตารางการลงเวลารายบุคคล ({filtered.length} รายการ)</span>
+              <i className="fa-solid fa-clipboard-user" />
+              <span>รายการสถานะการลงเวลาปฏิบัติราชการรายบุคคล ({checkedInRecords.length} รายการ)</span>
             </h2>
-            <p className="text-[11px] text-emerald-100/90">อัปเดตเรียลไทม์อัตโนมัติ (Tri-Layer Sync)</p>
+            <p className="text-[11px] text-emerald-100/90">แสดงรายชื่อผู้ที่ลงเวลาปฏิบัติงานล่าสุดในวันที่เลือกตามขอบเขตการมองเห็น</p>
           </div>
           <button
             type="button"
@@ -222,7 +258,7 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Option 1 Blended Filters */}
+        {/* Blended Filters */}
         <div className="p-4 border-b border-slate-100 dark:border-slate-800 space-y-3">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
             <div className="lg:col-span-4">
@@ -241,91 +277,137 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Pagination ABOVE Table (Original dashboard.html position, default 5) */}
-        {!loading && filtered.length > 0 && (
-          <PaginationBar
-            totalItems={filtered.length}
-            page={page}
-            pageSize={pageSize}
-            onPageChange={setPage}
-            onPageSizeChange={(n) => { setPageSize(n); setPage(1); }}
-            pageSizeOptions={[5, 10, 15, 20, 30]}
-          />
-        )}
+        {/* Pagination ABOVE Table (Original dashboard.html position, default 5, options [5, 10, 15, 20]) */}
+        <PaginationBar
+          totalItems={checkedInRecords.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(n) => { setPageSize(n); setPage(1); }}
+          pageSizeOptions={[5, 10, 15, 20]}
+        />
 
         {loading ? (
           <div className="p-10 text-center text-slate-400">
             <i className="fa-solid fa-circle-notch fa-spin text-2xl text-[#00744B] mb-2" />
             <p className="text-sm font-semibold">กำลังโหลดข้อมูลการลงเวลา...</p>
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="p-10 text-center text-slate-400 text-sm">ไม่พบข้อมูลการลงเวลาตามเงื่อนไขที่เลือก</div>
         ) : (
           <>
-            {/* Desktop 7-Column Table (Original: ลำดับ | ชื่อ-นามสกุล | ตำแหน่ง | สังกัด | เวลาเข้างาน | เวลาออกงาน | สถานะ) */}
+            {/* Desktop 7-Column Table (Always renders thead even when checkedInRecords.length === 0) */}
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-sm text-left bma-table">
-                <thead className="bg-slate-50 dark:bg-slate-800/80 text-xs text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                <thead className="bg-slate-100 dark:bg-slate-900 text-xs uppercase font-extrabold tracking-wider text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
                   <tr>
-                    <th className="px-4 py-3 w-12 text-center">ลำดับ</th>
-                    <th className="px-4 py-3">ชื่อ-นามสกุล</th>
-                    <th className="px-4 py-3">ตำแหน่ง</th>
-                    <th className="px-4 py-3">สังกัด</th>
-                    <th className="px-4 py-3 text-center">เวลาเข้างาน</th>
-                    <th className="px-4 py-3 text-center">เวลาออกงาน</th>
-                    <th className="px-4 py-3 text-center">สถานะ</th>
+                    <th className="w-14 text-center py-3 px-3">ลำดับ</th>
+                    <th className="min-w-[180px] py-3 px-4 whitespace-nowrap">ชื่อ-นามสกุล</th>
+                    <th className="min-w-[200px] py-3 px-4 whitespace-nowrap">ตำแหน่ง</th>
+                    <th className="min-w-[210px] py-3 px-4">สังกัด (สำนักงาน/กอง &gt; ส่วน/ฝ่าย)</th>
+                    <th className="w-28 text-center py-3 px-3 whitespace-nowrap">เวลาเข้างาน</th>
+                    <th className="w-28 text-center py-3 px-3 whitespace-nowrap">เวลาออกงาน</th>
+                    <th className="w-40 text-center py-3 px-3 whitespace-nowrap">สถานะ</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {paginated.map((row, idx) => {
-                    const posText = UIHelpers.formatPosition(row.position_title, row.position_level, row.position_type, row.position);
-                    return (
-                      <tr
-                        key={row.id || `${row.personnel_id}-${idx}`}
-                        onClick={() => setPreviewRecord(row)}
-                        className="hover:bg-emerald-50/40 dark:hover:bg-slate-800/50 transition cursor-pointer"
-                      >
-                        <td className="px-4 py-3 text-center text-xs text-slate-400 font-mono">{(page - 1) * pageSize + idx + 1}</td>
-                        <td className="px-4 py-3 font-bold text-slate-800 dark:text-white">{row.full_name || '-'}</td>
-                        <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">{posText}</td>
-                        <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">{row.division || '-'}</td>
-                        <td className="px-4 py-3 text-center font-mono text-xs font-bold text-[#00744B] dark:text-[#00C08A]">{row.check_in_time || '--:--'}</td>
-                        <td className="px-4 py-3 text-center font-mono text-xs font-bold text-sky-600 dark:text-sky-400">{row.check_out_time || '--:--'}</td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold ${STATUS_BADGE[row.status_category] || STATUS_BADGE.normal}`}>
-                            {row.status_label || row.status || '-'}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {checkedInRecords.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="text-center py-10 text-slate-400 font-bold text-sm">
+                        <i className="fa-regular fa-calendar-xmark text-2xl mb-2 block text-emerald-700/60 dark:text-emerald-400/60" />
+                        ไม่พบผู้ลงเวลาปฏิบัติงาน
+                      </td>
+                    </tr>
+                  ) : (
+                    paginated.map((row, idx) => {
+                      const posText = UIHelpers.formatPosition(row.position_title, row.position_level, row.position_type, row.position_full || row.position);
+                      const statusColor = colors[row.status_category] || row.row_color || '#007B3E';
+                      return (
+                        <tr
+                          key={row.log_id || row.id || `${row.personnel_id}-${idx}`}
+                          onClick={() => setPreviewRecord(row)}
+                          className="hover:bg-emerald-50/40 dark:hover:bg-slate-800/50 transition cursor-pointer"
+                        >
+                          <td className="w-14 text-center py-3 px-3 text-xs text-slate-500 font-semibold whitespace-nowrap">
+                            {(page - 1) * pageSize + idx + 1}
+                          </td>
+                          <td className="min-w-[180px] py-3 px-4 whitespace-nowrap font-bold text-slate-800 dark:text-white">
+                            <div className="flex items-center gap-1.5">
+                              <span>{row.full_name || '-'}</span>
+                              <i className="fa-regular fa-id-badge text-xs text-emerald-600/80" />
+                            </div>
+                          </td>
+                          <td className="min-w-[200px] py-3 px-4 whitespace-nowrap text-xs font-medium text-slate-700 dark:text-slate-200">
+                            {posText}
+                          </td>
+                          <td className="min-w-[210px] py-3 px-4 leading-snug">
+                            <div className="font-bold text-xs text-emerald-700 dark:text-emerald-400 truncate max-w-[240px]" title={row.bureau || '-'}>
+                              {row.bureau || '-'}
+                            </div>
+                            <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium truncate max-w-[240px] mt-0.5" title={row.division || '-'}>
+                              {row.division || '-'}
+                            </div>
+                          </td>
+                          <td className="w-28 text-center py-3 px-3 font-mono font-bold whitespace-nowrap text-[#00744B] dark:text-[#00C08A]">
+                            {row.check_in_time ? `${row.check_in_time} น.` : '-'}
+                          </td>
+                          <td className="w-28 text-center py-3 px-3 font-mono font-bold whitespace-nowrap text-slate-700 dark:text-slate-200">
+                            {row.check_out_time ? `${row.check_out_time} น.` : '-'}
+                          </td>
+                          <td className="w-40 text-center py-3 px-3 whitespace-nowrap">
+                            <span
+                              className="inline-flex px-3 py-1 rounded-full text-xs font-bold text-white shadow-xs"
+                              style={{ backgroundColor: statusColor }}
+                            >
+                              {row.status_label || row.status || '-'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
 
             {/* Mobile Cards */}
             <div className="lg:hidden divide-y divide-slate-200 dark:divide-slate-800">
-              {paginated.map((row, idx) => {
-                const posText = UIHelpers.formatPosition(row.position_title, row.position_level, row.position_type, row.position);
-                return (
-                  <div key={row.id || `${row.personnel_id}-${idx}`} onClick={() => setPreviewRecord(row)} className="p-4 space-y-2 cursor-pointer">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-bold text-sm truncate">{row.full_name || '-'}</p>
-                        <p className="text-xs text-slate-500 truncate">{posText}</p>
-                        <p className="text-[11px] text-slate-400 truncate">{row.division || '-'}</p>
+              {checkedInRecords.length === 0 ? (
+                <div className="p-8 text-center text-xs font-bold text-slate-400">
+                  <i className="fa-regular fa-calendar-xmark text-2xl mb-2 block text-emerald-700/60 dark:text-emerald-400/60" />
+                  ไม่พบผู้ลงเวลาปฏิบัติงาน
+                </div>
+              ) : (
+                paginated.map((row, idx) => {
+                  const posText = UIHelpers.formatPosition(row.position_title, row.position_level, row.position_type, row.position_full || row.position);
+                  const statusColor = colors[row.status_category] || row.row_color || '#007B3E';
+                  return (
+                    <div key={row.log_id || row.id || `${row.personnel_id}-${idx}`} onClick={() => setPreviewRecord(row)} className="p-4 space-y-2 cursor-pointer">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm truncate">
+                            <span className="inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 mr-1.5 rounded bg-slate-100 dark:bg-slate-800 text-[11px] font-extrabold">
+                              {(page - 1) * pageSize + idx + 1}
+                            </span>
+                            {row.full_name || '-'}
+                          </p>
+                          <p className="text-xs text-slate-500 truncate mt-0.5">{posText}</p>
+                          <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold truncate">{row.bureau || '-'}</p>
+                          <p className="text-[11px] text-slate-400 truncate">{row.division || '-'}</p>
+                        </div>
+                        <span
+                          className="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold text-white"
+                          style={{ backgroundColor: statusColor }}
+                        >
+                          {row.status_label || row.status || '-'}
+                        </span>
                       </div>
-                      <span className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold ${STATUS_BADGE[row.status_category] || STATUS_BADGE.normal}`}>
-                        {row.status_label || row.status || '-'}
-                      </span>
+                      <div className="text-xs font-mono bg-slate-50 dark:bg-slate-800/70 rounded-xl px-3 py-2 flex justify-between">
+                        <span>เข้า <strong className="text-[#00744B] dark:text-[#00C08A]">{row.check_in_time ? `${row.check_in_time} น.` : '-'}</strong></span>
+                        <span>ออก <strong className="text-slate-700 dark:text-slate-200">{row.check_out_time ? `${row.check_out_time} น.` : '-'}</strong></span>
+                      </div>
                     </div>
-                    <div className="text-xs font-mono bg-slate-50 dark:bg-slate-800/70 rounded-xl px-3 py-2 flex justify-between">
-                      <span>เข้า <strong className="text-[#00744B]">{row.check_in_time || '--:--'}</strong></span>
-                      <span>ออก <strong className="text-sky-600">{row.check_out_time || '--:--'}</strong></span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </>
         )}
