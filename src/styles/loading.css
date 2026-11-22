@@ -1,0 +1,165 @@
+/* Smooth vertical gradient background using BMA Civic 9-color palette without pattern/clutter */
+        body.login-vertical-gradient,
+        .login-vertical-gradient {
+            background: 
+                radial-gradient(ellipse 70% 50% at 85% 10%, rgba(9, 113, 206, 0.32) 0%, transparent 65%),
+                radial-gradient(ellipse 55% 45% at 12% 88%, rgba(235, 61, 169, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 85% 82%, rgba(255, 180, 73, 0.28) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 45% at 15% 18%, rgba(72, 0, 128, 0.35) 0%, transparent 65%),
+                linear-gradient(180deg, #132E22 0%, #215A41 18%, #00744B 42%, #00995D 65%, #00C08A 84%, #66A33A 100%) !important;
+            background-color: #00744B !important;
+            min-height: 100dvh !important;
+            height: 100dvh !important;
+        }
+        html.dark body.login-vertical-gradient,
+        html.dark .login-vertical-gradient {
+            background: 
+                radial-gradient(ellipse 70% 50% at 85% 10%, rgba(9, 113, 206, 0.22) 0%, transparent 65%),
+                radial-gradient(ellipse 55% 45% at 12% 88%, rgba(235, 61, 169, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 85% 82%, rgba(255, 180, 73, 0.20) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 45% at 15% 18%, rgba(72, 0, 128, 0.28) 0%, transparent 65%),
+                linear-gradient(180deg, #071911 0%, #122B20 20%, #004D32 45%, #00744B 75%, #00C08A 100%) !important;
+            background-color: #071911 !important;
+            min-height: 100dvh !important;
+            height: 100dvh !important;
+        }
+
+        :root {
+            --ld-stage-size: 112px;
+            --ld-frame-size: 96px;
+        }
+
+        /* Civic Orbital Halo + Intact Logo Badge */
+        .logo-stage {
+            position: relative;
+            width: var(--ld-stage-size, 112px);
+            height: var(--ld-stage-size, 112px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: none;
+        }
+
+        .halo-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: conic-gradient(from 0deg, rgba(0, 192, 138, 0.12), #00C08A, #F6DE51, rgba(0, 116, 75, 0.15), rgba(0, 192, 138, 0.12));
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 2.5px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 2.5px));
+            animation: halo-spin 1.8s linear infinite;
+        }
+        @keyframes halo-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-frame {
+            width: var(--ld-frame-size, 96px);
+            height: var(--ld-frame-size, 96px);
+            border-radius: 1.25rem;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 116, 75, 0.06);
+            border: 1px solid rgba(0, 116, 75, 0.14);
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 116, 75, 0.08);
+            position: relative;
+            z-index: 1;
+        }
+        html.dark .logo-frame {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(52, 211, 153, 0.22);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        }
+
+        #ldOrgLogo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            animation: gentle-pulse 2s ease-in-out infinite;
+        }
+        #ldOrgLogo.hidden,
+        #ldLogoFallback.hidden {
+            display: none !important;
+        }
+        @keyframes gentle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Card Container */
+        .ld-card {
+            background: var(--bma-surface-1, #FFFFFF);
+            border: 1px solid var(--bma-border, #E2E8F0);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+            border-radius: 1.5rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        html.dark .ld-card {
+            background: var(--bma-surface-1, #11231B);
+            border-color: var(--bma-border, #244737);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+        }
+
+        .login-card-header-gradient {
+            background: linear-gradient(180deg, #1A4D38 0%, #00744B 100%) !important;
+        }
+        html.dark .login-card-header-gradient {
+            background: linear-gradient(180deg, #0F2D21 0%, #005436 100%) !important;
+        }
+
+        /* Progress Bar */
+        .ld-bar {
+            width: 160px;
+            height: 4px;
+            border-radius: 99px;
+            background: var(--bma-border, #E2E8F0);
+            overflow: hidden;
+            position: relative;
+        }
+        html.dark .ld-bar {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .ld-bar > span {
+            position: absolute;
+            left: -40%;
+            top: 0;
+            height: 100%;
+            width: 40%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #00744B, #00C08A, #F6DE51);
+            animation: ld-slide 1.2s ease-in-out infinite;
+        }
+        @keyframes ld-slide {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+
+        /* Fade out transition */
+        .sp-fade {
+            opacity: 0 !important;
+            transform: scale(0.98);
+            transition: opacity 0.22s ease-out, transform 0.22s ease-out !important;
+        }
+
+        @media (max-width: 640px) {
+            :root {
+                --ld-stage-size: 96px;
+                --ld-frame-size: 84px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .halo-ring {
+                animation: none;
+                opacity: 0.6;
+            }
+            #ldOrgLogo {
+                animation: none;
+            }
+            .ld-bar > span {
+                animation-duration: 2.4s;
+            }
+        }

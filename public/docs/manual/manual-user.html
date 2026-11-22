@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คู่มือการใช้งาน: สำหรับผู้ใช้งานทั่วไป (User Manual) | ระบบลงเวลาปฏิบัติราชการออนไลน์ กรุงเทพมหานคร</title>
+    <!-- Google Fonts: Sarabun & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bma: {
+                            green: '#00744B',
+                            'green-hover': '#005B3A',
+                            'green-light': '#E6F4EA',
+                            blue: '#0971CE',
+                            'blue-light': '#E0F2FE',
+                            amber: '#FFB449',
+                            'amber-dark': '#D97706',
+                            purple: '#480080',
+                            dark: '#0f172a',
+                            darkcard: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-full { width: 100% !important; max-width: none !important; margin: 0 !important; }
+            .page-break { page-break-before: always; break-before: page; }
+            body { background: white !important; color: black !important; }
+            header, footer, aside, #btnBackToTop, #mobileTocDrawer, #mockupModal, .mockup-interactive-banner { display: none !important; }
+            main { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .shadow-xl, .shadow-2xl, .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+            a { text-decoration: none !important; color: inherit !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- Header -->
+    <header class="no-print sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+                <a href="index.html" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[#00744B] hover:text-white transition shadow-xs cursor-pointer no-underline shrink-0" title="กลับไปหน้ารวมคู่มือ">
+                    <i class="fa-solid fa-house"></i>
+                </a>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-extrabold truncate text-slate-900 dark:text-white leading-tight">คู่มือการใช้งาน: สำหรับผู้ใช้งานทั่วไป</h1>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-[#00744B] dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40">User</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold truncate">ระบบลงเวลาปฏิบัติราชการออนไลน์ กรุงเทพมหานคร</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                <button type="button" id="btnToggleMobileToc" class="lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] dark:text-emerald-300 hover:bg-emerald-100 transition shadow-xs cursor-pointer">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <span>สารบัญ</span>
+                </button>
+                <button type="button" onclick="window.print()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition shadow-xs cursor-pointer" title="พิมพ์คู่มือ / บันทึกเป็น PDF">
+                    <i class="fa-solid fa-print"></i>
+                    <span class="hidden sm:inline">พิมพ์ / PDF</span>
+                </button>
+                <button type="button" id="btnToggleTheme" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition shadow-xs cursor-pointer" title="สลับโหมดสี">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                    <span id="themeLabel" class="hidden sm:inline">โหมดถนอมสายตา</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer for TOC -->
+    <div id="mobileTocDrawer" class="no-print fixed inset-0 z-50 hidden">
+        <div id="mobileTocBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity opacity-0 cursor-pointer"></div>
+        <div id="mobileTocPanel" class="absolute inset-y-0 right-0 max-w-full w-80 bg-white dark:bg-slate-900 shadow-2xl p-5 flex flex-col z-10 transform translate-x-full transition-transform duration-300">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                <div class="flex items-center gap-2 font-black text-sm text-[#00744B] dark:text-emerald-400">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>สารบัญหัวข้อ</span>
+                </div>
+                <button type="button" id="btnCloseMobileToc" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <nav id="mobileTocNav" class="space-y-1.5 overflow-y-auto flex-1 text-xs"></nav>
+        </div>
+    </div>
+
+    <!-- Layout Container (TOC + Main Body) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full flex items-start gap-8">
+
+        <!-- Sticky Sidebar TOC for Desktop -->
+        <aside class="no-print hidden lg:block w-72 shrink-0 sticky top-24 space-y-4 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+                    <div class="text-xs font-black uppercase tracking-wider text-[#00744B] dark:text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-list-ol"></i>
+                        <span>สารบัญคู่มือ</span>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-bold">10 หัวข้อ</span>
+                </div>
+                <nav id="desktopTocNav" class="space-y-1 text-xs">
+                    <a href="#topic-1" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        1. เข้าสู่ระบบ &amp; จดจำชื่อผู้ใช้
+                    </a>
+                    <a href="#topic-2" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        2. เปลี่ยนรหัสผ่าน &amp; ลืมรหัสผ่าน
+                    </a>
+                    <a href="#topic-3" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        3. ส่วนประกอบหน้าจอลงเวลา
+                    </a>
+                    <a href="#topic-4" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        4. ถ่ายภาพยืนยันตัวตน &amp; GPS
+                    </a>
+                    <a href="#topic-5" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        5. ลงเวลาปกติ &amp; กล่องยืนยัน
+                    </a>
+                    <a href="#topic-6" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        6. ลงเวลารูปแบบพิเศษ &amp; กะ
+                    </a>
+                    <a href="#topic-7" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        7. คำขอพิเศษ &amp; ยกเลิกคำขอ
+                    </a>
+                    <a href="#topic-8" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        8. ประวัติการลงเวลา &amp; 5 สถานะ
+                    </a>
+                    <a href="#topic-9" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        9. สลับธีม &amp; ออกจากระบบ
+                    </a>
+                    <a href="#topic-10" class="toc-link block px-3 py-2 rounded-xl font-semibold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-[#00744B] transition no-underline">
+                        10. คำถามที่พบบ่อย (FAQ)
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Role Badge Capsule in Sidebar -->
+            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-slate-800/80 p-4 rounded-2xl border border-emerald-200/60 dark:border-slate-700 text-xs">
+                <div class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-circle-info text-[#00744B]"></i>
+                    <span>บทบาทผู้ใช้งานทั่วไป</span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    มีสิทธิ์บันทึกลงเวลา ถ่ายภาพใบหน้า ระบุพิกัด GPS ยื่นคำขอพิเศษ และดูประวัติของตนเอง ไม่สามารถเข้าสู่ระบบจัดการข้อมูลบุคลากรหรือตั้งค่าได้
+                </p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area with min-w-0 to prevent flex overflow -->
+        <main class="flex-1 min-w-0 space-y-12">
+
+            <!-- Title & Hero Banner -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-[#00744B] dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>คู่มือฉบับมาตรฐาน (Standard User Manual)</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    คู่มือการใช้งานระบบลงเวลาปฏิบัติราชการ: สำหรับผู้ใช้งานทั่วไป
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    คู่มือนี้จัดทำขึ้นเพื่อแนะนำวิธีการใช้งานระบบลงเวลาปฏิบัติราชการออนไลน์ กรุงเทพมหานคร ผ่านเว็บบราวเซอร์บนอุปกรณ์คอมพิวเตอร์และโทรศัพท์สมาร์ตโฟนอย่างละเอียดทีละขั้นตอน พร้อมภาพจำลองระบบที่มีปฏิสัมพันธ์ (Interactive Mockups) และแนวทางแก้ไขปัญหาเบื้องต้น
+                </p>
+                <div class="pt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-check text-[#00744B]"></i> ปรับปรุงล่าสุด: 19 พฤศจิกายน 2569 (V2.11.0)</span>
+                    <span>•</span>
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-[#00744B]"></i> ระบบรองรับมาตรฐาน PDPA</span>
+                </div>
+            </div>
+
+            <!-- Topic 1: เข้าสู่ระบบ & จดจำชื่อผู้ใช้ -->
+            <section id="topic-1" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">1</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การเข้าสู่ระบบ (โหมดลงเวลา) และการจดจำชื่อผู้ใช้</h3>
+                        <p class="text-xs text-slate-500">ขั้นตอนการเข้าสู่ระบบเพื่อบันทึกเวลาปฏิบัติงาน ปุ่มดูรหัสผ่าน และฟังก์ชันจดจำชื่อผู้ใช้ 7 วัน</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p>
+                        เปิดเว็บบราวเซอร์ (แนะนำ <b>Brave</b>, <b>Google Chrome</b> บน Android/คอมพิวเตอร์ หรือ <b>Safari</b> บน iPhone/iPad &mdash; หากใช้ Chrome บน iPhone/iPad แล้วระบบถามสิทธิ์กล้องซ้ำ แนะนำเปิดใช้งานผ่าน <b>Safari</b>) แล้วเข้าไปยัง URL ของระบบลงเวลา หน้าจอหลักจะแสดงฟอร์มเข้าสู่ระบบ <code class="font-mono bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-emerald-600 dark:text-emerald-400">index.html</code> พร้อมหน้าจอโหลดเตรียมข้อมูล <code class="font-mono bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-emerald-600 dark:text-emerald-400">loading.html</code> เมื่อเข้าสู่ระบบหรือเปิดแอปซ้ำภายใน Session 7 วัน
+                    </p>
+                    <div class="p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-xs space-y-1">
+                        <div class="font-extrabold text-[#00744B] dark:text-emerald-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bullhorn"></i>
+                            <span>ป๊อปอัปประกาศระบบ (System Announcement) — เด้งครั้งเดียวต่อ 1 รอบประกาศ</span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            หากผู้ดูแลระบบเปิดใช้งานประกาศข่าวสาร (แบบข้อความหรือรูปภาพโปสเตอร์แนวมือถือ) ระบบจะแสดงป๊อปอัปให้อ่านและกดปุ่ม <b>"รับทราบ"</b> เพียง 1 ครั้ง ทั้งผู้ที่เข้าสู่ระบบผ่านหน้า Login หรือผู้ที่เข้าใช้งานอัตโนมัติด้วย Session 7 วัน (และสามารถกดดูประกาศซ้ำได้จากป้ายเวอร์ชันมุมขวาบนของการ์ด Login)
+                        </p>
+                    </div>
+
+                    <!-- Mock UI Box: Interactive Login Screen Wireframe -->
+                    <div class="p-4 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/60 space-y-3 max-w-md mx-auto shadow-sm">
+                        <div class="text-center font-bold text-slate-700 dark:text-slate-200 text-sm flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-lock text-[#00744B]"></i>
+                            <span>ตัวอย่างหน้าจอจำลอง: เข้าสู่ระบบ</span>
+                        </div>
+                        <div class="space-y-2.5">
+                            <div class="p-2.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-2 text-xs">
+                                <i class="fa-solid fa-user text-slate-400 ml-2"></i>
+                                <input type="text" id="mockUsernameInput" value="somchai.bma" readonly class="bg-transparent border-none outline-hidden text-slate-700 dark:text-slate-200 w-full font-medium" />
+                            </div>
+                            <div class="p-2.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-2 flex-1">
+                                    <i class="fa-solid fa-lock text-slate-400 ml-2"></i>
+                                    <input type="password" id="mockPasswordInput" value="password123" readonly class="bg-transparent border-none outline-hidden text-slate-700 dark:text-slate-200 w-full font-medium" />
+                                </div>
+                                <button type="button" id="btnToggleMockPassword" class="p-1 text-slate-400 hover:text-emerald-600 cursor-pointer mr-1" title="คลิกเพื่อทดสอบแสดง/ซ่อนรหัสผ่าน">
+                                    <i id="mockEyeIcon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between px-2 text-xs">
+                                <label class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-bold cursor-pointer">
+                                    <input type="checkbox" checked class="rounded border-slate-300 text-[#00744B] focus:ring-[#00744B] w-4 h-4 cursor-pointer" />
+                                    <span>จดจำชื่อผู้ใช้ (7 วัน)</span>
+                                </label>
+                                <button type="button" class="mockup-btn text-[#00744B] dark:text-emerald-400 font-bold hover:underline cursor-pointer" data-title="ลืมรหัสผ่าน" data-desc="ในการใช้งานจริง ปุ่มนี้จะเปิด Modal สำหรับกรอกเลขประจำตัวประชาชน 13 หลัก เพื่อแจ้งลืมรหัสผ่านและขอให้ผู้ดูแลอนุมัติรีเซ็ต">
+                                    ลืมรหัสผ่าน
+                                </button>
+                            </div>
+                            <div class="pt-1">
+                                <button type="button" class="mockup-btn w-full py-2.5 rounded-full bg-gradient-to-r from-[#00744B] to-[#00A368] text-white text-center font-bold text-xs shadow-md hover:brightness-105 active:scale-[0.99] transition cursor-pointer flex items-center justify-center gap-1.5" data-title="ปุ่ม Login (เข้าสู่ระบบลงเวลา)" data-desc="ในการใช้งานจริง ปุ่มสีเขียวนี้จะตรวจสอบ Username/Password แล้วพาท่านเข้าสู่หน้าจอลงเวลาปฏิบัติราชการ (checkin.html) ทันที">
+                                    <i class="fa-solid fa-right-to-bracket"></i>
+                                    <span>Login (เข้าสู่ระบบลงเวลา)</span>
+                                </button>
+                            </div>
+                            <div class="text-center pt-1">
+                                <button type="button" class="mockup-btn text-[11px] text-slate-500 dark:text-slate-400 hover:text-[#00744B] dark:hover:text-emerald-400 font-semibold cursor-pointer" data-title="เปลี่ยนรหัสผ่านด้วยตนเอง" data-desc="ในการใช้งานจริง ปุ่มนี้จะเปิดหน้าต่างให้ท่านกรอกรหัสผ่านเดิม และกำหนดรหัสผ่านใหม่ด้วยตนเอง">
+                                    <i class="fa-solid fa-key mr-1"></i>เปลี่ยนรหัสผ่านด้วยตนเอง
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Steps List -->
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#00744B] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">กรอกชื่อบัญชีและรหัสผ่าน:</strong>
+                                <span> ใส่ Username และ Password ของท่าน โดยสามารถกดปุ่มรูปดวงตา (<i class="fa-solid fa-eye text-slate-400"></i>) ด้านขวาของช่องรหัสผ่าน เพื่อตรวจสอบความถูกต้องของตัวอักษรได้</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#00744B] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">เปิดตัวเลือก "จดจำชื่อผู้ใช้":</strong>
+                                <span> หากท่านใช้งานบนอุปกรณ์ส่วนตัว แนะนำให้ติ๊กเลือก <b>"จดจำชื่อผู้ใช้"</b> ระบบจะจำชื่อผู้ใช้งานไว้ และคงสถานะ Session ไว้ 7 วันโดยไม่ต้องกรอกใหม่ทุกครั้ง</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#00744B] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">กดปุ่ม "Login":</strong>
+                                <span> สำหรับผู้ใช้งานทั่วไป ให้กดปุ่มสีเขียว <b>"Login"</b> เท่านั้น ระบบจะพาไปยังหน้าลงเวลาปฏิบัติราชการ (<code class="font-mono text-emerald-600 dark:text-emerald-400">checkin.html</code>) ทันที</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Box -->
+                    <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 text-amber-900 dark:text-amber-200 text-xs leading-relaxed">
+                        <strong class="font-bold flex items-center gap-1.5 mb-1 text-sm text-amber-800 dark:text-amber-300">
+                            <i class="fa-solid fa-triangle-exclamation"></i>ข้อควรระวังเกี่ยวกับปุ่ม "เข้าสู่ระบบผู้ดูแลระบบ":
+                        </strong>
+                        ปุ่ม <b>"เข้าสู่ระบบผู้ดูแลระบบ"</b> สงวนไว้สำหรับผู้ดูแลระดับกอง ฝ่าย และผู้ดูแลระบบสูงสุดเท่านั้น หากบัญชีผู้ใช้งานทั่วไปกดปุ่มนี้ ระบบจะแสดงข้อความแจ้งเตือนว่า <i>"ท่านไม่มีสิทธิ์เข้าใช้งานหน้าจัดการระบบ"</i> และไม่อนุญาตให้เข้าสู่ Dashboard
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 2: เปลี่ยนรหัสผ่าน & แจ้งลืมรหัสผ่าน -->
+            <section id="topic-2" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">2</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การเปลี่ยนรหัสผ่านด้วยตนเอง และการแจ้งลืมรหัสผ่าน</h3>
+                        <p class="text-xs text-slate-500">วิธีเปลี่ยนรหัสผ่านใหม่ และขั้นตอนการขอรีเซ็ตรหัสผ่านด้วยเลขบัตรประชาชน 13 หลัก</p>
+                    </div>
+                </div>
+
+                <div class="space-y-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Option A: Self Password Change -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="font-bold text-slate-800 dark:text-white flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-key text-[#00744B]"></i>
+                                <span>วิธีที่ 1: เปลี่ยนรหัสผ่านด้วยตนเอง</span>
+                            </div>
+                            <p class="text-xs text-slate-500">กรณีที่จำรหัสผ่านเดิมได้และต้องการเปลี่ยนรหัสผ่านใหม่เพื่อความปลอดภัยส่วนบุคคล</p>
+                            <ol class="list-decimal pl-5 space-y-1.5 text-xs">
+                                <li>คลิกที่ปุ่ม <b>"เปลี่ยนรหัสผ่านด้วยตนเอง"</b> ด้านล่างฟอร์มเข้าสู่ระบบ</li>
+                                <li>กรอก Username, รหัสผ่านเดิม (Old Password)</li>
+                                <li>กรอกรหัสผ่านใหม่ (New Password) และยืนยันรหัสผ่านใหม่อีกครั้งให้ตรงกัน</li>
+                                <li>กดปุ่ม <b>"ยืนยันการเปลี่ยนรหัสผ่าน"</b> เมื่อสำเร็จจะเข้าสู่ระบบได้ด้วยรหัสใหม่ทันที</li>
+                            </ol>
+                        </div>
+
+                        <!-- Option B: Forgot Password Request -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="font-bold text-slate-800 dark:text-white flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-id-card text-[#0971CE]"></i>
+                                <span>วิธีที่ 2: แจ้งลืมรหัสผ่านด้วยเลขบัตร ปชช. 13 หลัก</span>
+                            </div>
+                            <p class="text-xs text-slate-500">กรณีลืมรหัสผ่านเดิมและไม่สามารถเข้าสู่ระบบได้ด้วยตนเอง</p>
+                            <ol class="list-decimal pl-5 space-y-1.5 text-xs">
+                                <li>คลิกที่ข้อความ <b>"ลืมรหัสผ่าน"</b> บนหน้าจอเข้าสู่ระบบ</li>
+                                <li>กรอก <b>เลขประจำตัวประชาชน 13 หลัก</b> ที่ตรงกับฐานข้อมูลทะเบียนบุคลากร กทม. ของท่าน</li>
+                                <li>กดปุ่ม <b>"ส่งคำขอรีเซ็ตรหัสผ่าน"</b></li>
+                                <li>ระบบจะส่งคำขอไปยังผู้ดูแลระบบระดับกอง (Admin กอง) เพื่อตรวจสอบตัวตนและอนุมัติ</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Important Box: Reset Policy -->
+                    <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border-l-4 border-rose-600 text-rose-900 dark:text-rose-200 text-xs leading-relaxed space-y-1">
+                        <strong class="font-bold flex items-center gap-1.5 mb-1 text-sm text-rose-800 dark:text-rose-300">
+                            <i class="fa-solid fa-circle-exclamation"></i>กฎสำคัญ: รหัสผ่านเริ่มต้นหลังผู้ดูแลอนุมัติรีเซ็ต
+                        </strong>
+                        <p>
+                            เมื่อผู้ดูแลระบบทำการตรวจสอบและกด "อนุมัติรีเซ็ตรหัสผ่าน" ให้แก่ท่านแล้ว <b>รหัสผ่านใหม่ของท่านจะถูกตั้งค่าเป็น "เลข 6 หลักสุดท้ายของบัตรประจำตัวประชาชน"</b> ของท่านโดยอัตโนมัติ (ตัวอย่าง: หากเลขบัตรประชาชนคือ 1-1002-34567-<b>89-0</b> รหัสผ่านใหม่ของท่านคือ <b>67890</b> หรือ 6 หลักท้าย <b>567890</b>) เมื่อเข้าสู่ระบบสำเร็จแล้ว ขอแนะนำให้ทำการเปลี่ยนรหัสผ่านเป็นรหัสส่วนตัวของท่านทันทีเพื่อความปลอดภัย
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 3: ส่วนประกอบหน้าจอลงเวลา -->
+            <section id="topic-3" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">3</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">ส่วนประกอบหน้าจอลงเวลา (คอมพิวเตอร์ &amp; สมาร์ตโฟน)</h3>
+                        <p class="text-xs text-slate-500">ทำความเข้าใจการจัดวางองค์ประกอบ แถบเมนู แท็บ และ Drawer บนมือถือ</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p>
+                        หน้าจอลงเวลาปฏิบัติราชการ (<code class="font-mono bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-emerald-600">checkin.html</code>) ได้รับการออกแบบให้ตอบสนอง (Responsive Design) อย่างสมบูรณ์แบบทั้งบนจอคอมพิวเตอร์ (PC) และโทรศัพท์สมาร์ตโฟน:
+                    </p>
+
+                    <!-- Mock Layout Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- Desktop Layout Wireframe -->
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="font-bold text-slate-800 dark:text-white flex items-center justify-between">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-desktop text-[#00744B]"></i>มุมมองคอมพิวเตอร์ (Desktop)</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 font-bold">2 คอลัมน์</span>
+                            </div>
+                            <div class="space-y-2 text-xs">
+                                <div class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                                    <span class="font-bold text-[#00744B]">Header แถบชื่อหน่วยงาน</span>
+                                    <span class="text-[10px] text-slate-400">ปุ่มสลับธีม / ออกจากระบบ</span>
+                                </div>
+                                <div class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 flex gap-1 text-[11px] font-bold">
+                                    <span class="px-2 py-1 bg-[#00744B] text-white rounded-lg">1. ลงเวลา</span>
+                                    <span class="px-2 py-1 text-slate-600 dark:text-slate-300">2. ประวัติส่วนตัว</span>
+                                    <span class="px-2 py-1 text-slate-600 dark:text-slate-300">3. คำขอพิเศษ</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center space-y-1">
+                                        <div class="text-[11px] font-bold text-slate-500">ฝั่งซ้าย (50% Cockpit)</div>
+                                        <div class="text-xs font-bold text-[#00744B]"><i class="fa-solid fa-camera mr-1"></i>พรีวิวรูป 3:4 + ปุ่มกล้องเต็มจอ</div>
+                                        <div class="text-[11px] font-bold text-[#0971CE]"><i class="fa-solid fa-map-location-dot mr-1"></i>การ์ด GPS &amp; แผนที่ Leaflet</div>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center space-y-1">
+                                        <div class="text-[11px] font-bold text-slate-500">ฝั่งขวา (50% Cockpit)</div>
+                                        <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"><i class="fa-solid fa-building-circle-check mr-1"></i>สลับ ในสถานที่ / นอกสถานที่</div>
+                                        <div class="text-[11px] font-bold text-emerald-600"><i class="fa-solid fa-fingerprint mr-1"></i>เลือกกะ &amp; ปุ่มบันทึกเวลา (Ultra Zero-Scroll)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Layout Wireframe -->
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="font-bold text-slate-800 dark:text-white flex items-center justify-between">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen-button text-[#0971CE]"></i>มุมมองสมาร์ตโฟน (Mobile &amp; Drawer)</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 font-bold">1 คอลัมน์</span>
+                            </div>
+                            <div class="space-y-2 text-xs">
+                                <div class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                                    <span class="font-bold text-[#00744B]">Header กะทัดรัด</span>
+                                    <span class="px-2 py-1 rounded-lg bg-emerald-100 text-[#00744B] text-[10px] font-bold"><i class="fa-solid fa-bars mr-1"></i>เมนู Drawer</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center">
+                                    <span class="text-xs font-black text-[#00744B] font-mono">08:30:15 น. (นาฬิกาดิจิทัลสด)</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center">
+                                    <span class="text-xs font-bold text-slate-600 dark:text-slate-300">ลำดับแถวเดี่ยว: กล้อง 3:4 &rarr; GPS &rarr; Dropdown</span>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-gradient-to-r from-[#00744B] to-[#00995D] text-white text-center font-bold text-xs shadow-md">
+                                    <i class="fa-solid fa-fingerprint mr-1"></i>ปุ่มลงเวลาลอยติดขอบล่าง (Sticky Action Bar)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Highlighted Component Descriptions -->
+                    <div class="space-y-2.5 pt-2">
+                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-800 dark:text-white block mb-0.5">1. แถบชื่อและนาฬิกาสด (Slim Banner &amp; Live Clock):</strong>
+                            <span>แสดงชื่อ-นามสกุล, ตำแหน่ง, สังกัด และนาฬิกาดิจิทัลขนาดใหญ่ที่อัปเดตวินาทีแบบ Real-time ตามเวลามาตรฐานของเซิร์ฟเวอร์</span>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-800 dark:text-white block mb-0.5">2. การ์ดสรุปสถานะเวลาเข้า-ออกวันนี้ (Today Attendance Cards):</strong>
+                            <span>แสดงผล 2 กล่องคู่: "เวลาเข้างาน" (ขอบสีเขียว) และ "เวลาออกงาน" (ขอบสีน้ำเงิน) จะเปลี่ยนจากข้อความ "ยังไม่ได้ลงเวลา" เป็นเวลาจริงเมื่อบันทึกสำเร็จ</span>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-800 dark:text-white block mb-0.5">3. เมนู Drawer แบบแยกหน้า (SPA) และระบบ "แก้ไขเวลา" บนสมาร์ตโฟนและเดสก์ท็อป:</strong>
+                            <span>กดปุ่มเมนูรูปขีดสามขีด (<i class="fa-solid fa-bars text-emerald-600"></i>) ที่มุมขวาบน เพื่อเปิด Drawer ที่แสดงชื่อ-นามสกุลและตำแหน่งของท่าน พร้อมเมนูจัดเรียงสมมาตรสำหรับ <b>คำขอพิเศษ</b>, <b>แก้ไขเวลา</b> (พร้อมตัวเลข Badge แจ้งเตือนรายการที่สถานะ <b>มาสาย</b> หรือ <b>ขาดราชการ</b> — กด <b>"ขอแก้ไขเวลา"</b> ส่งได้ทันทีใน 1 คลิกหรือแนบเหตุผลเพิ่มเติม และหากไม่อนุมัติสามารถกด <b>"ขอแก้ไขเวลาอีกครั้ง"</b>) และ <b>ประวัติการลงเวลา</b> (ขยายเต็มฝั่งขวาสำหรับผู้ใช้งานทั่วไป) รวมถึงสลับโหมดถนอมสายตาหรือออกจากระบบ</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 4: ถ่ายภาพยืนยันตัวตน & GPS -->
+            <section id="topic-4" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">4</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การถ่ายภาพยืนยันตัวตน และการอนุญาตสิทธิ์กล้อง / GPS</h3>
+                        <p class="text-xs text-slate-500">วิธีการใช้งานกล้อง Mirror 3:4 การตั้งค่าสิทธิ์กล้องถาวรและการคง Session 7 วันบน Brave / Chrome / Safari (iOS &amp; Android) รวมถึงการอ่านพิกัดสถานที่จริง</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <!-- Permission Prompt Guide -->
+                    <div class="p-4 sm:p-5 rounded-2xl bg-sky-50 dark:bg-sky-950/30 border-l-4 border-[#0971CE] text-sky-900 dark:text-sky-200 text-xs space-y-2.5">
+                        <div class="font-bold text-sm text-sky-800 dark:text-sky-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved"></i>การอนุญาตสิทธิ์การเข้าถึงอุปกรณ์และการจำ Session 7 วันข้ามเบราว์เซอร์
+                        </div>
+                        <p>
+                            เมื่อเปิดหน้าลงเวลาครั้งแรก เบราว์เซอร์จะแสดงหน้าต่างถามความยินยอม ให้กดปุ่ม <b>"อนุญาต" (Allow)</b> ทั้ง 2 รายการ และเลือกอายุสิทธิ์แบบต่อเนื่องตามเบราว์เซอร์ที่ใช้:
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 font-semibold">
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-sky-200 dark:border-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-camera text-[#00744B] text-lg"></i>
+                                <div>
+                                    <div class="text-slate-800 dark:text-white">1. อนุญาตให้ใช้กล้อง (Camera)</div>
+                                    <div class="text-[11px] text-slate-400 font-normal">สำหรับถ่ายภาพยืนยันตัวตนแบบ Real-time</div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-sky-200 dark:border-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-location-dot text-[#0971CE] text-lg"></i>
+                                <div>
+                                    <div class="text-slate-800 dark:text-white">2. อนุญาตให้ใช้ตำแหน่งที่ตั้ง (Location/GPS)</div>
+                                    <div class="text-[11px] text-slate-400 font-normal">สำหรับดึงพิกัดเพื่อตรวจสอบสถานที่ปฏิบัติราชการ</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white/90 dark:bg-slate-800/90 rounded-xl border border-sky-200/80 dark:border-slate-700 space-y-1.5 text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <div class="font-bold text-sky-800 dark:text-sky-300">แนวทางตั้งค่าสิทธิ์กล้องถาวร และรักษาการเข้าสู่ระบบ (Session 7 วัน):</div>
+                            <ul class="list-disc pl-4 space-y-1">
+                                <li><b>Brave (Android):</b> เมื่อมี Pop-up ถามสิทธิ์กล้อง ให้เลือก <b>"ตลอดไป"</b> (หลีกเลี่ยง <i>"จนกว่าจะปิดเว็บไซต์นี้"</i>) และปิด <b>Brave Shields &gt; "Forget me when I close this site"</b> เพื่อไม่ให้สิทธิ์กล้องและ Session 7 วันถูกล้างเมื่อปิดแอป</li>
+                                <li><b>Chrome (Android):</b> เลือก <b>"อนุญาตขณะเข้าชมเว็บไซต์"</b> (หลีกเลี่ยง <i>"อนุญาตในครั้งนี้"</i>) และใช้งานในแท็บปกติ (ไม่ใช่โหมดไม่ระบุตัวตน) เพื่อรักษา Session ต่อเนื่อง 7 วัน</li>
+                                <li><b>Safari (iOS):</b> กด <b>"อนุญาต"</b> และตั้งค่าถาวรที่แถบ URL โดยแตะ <b>aA</b> หรือ <b>ไอคอนเมนูหน้าเว็บ [สี่เหลี่ยมมีขีด]</b> &gt; <i>การตั้งค่าเว็บไซต์</i> &gt; <i>กล้อง</i> &gt; เลือก <b>"อนุญาต"</b> รวมถึงตรวจ <i>การตั้งค่า &gt; แอป &gt; Safari &gt; กล้อง</i> (ใช้แท็บปกติเพื่อรักษา Session 7 วัน)</li>
+                                <li><b>Chrome (iOS):</b> เปิด <i>การตั้งค่า &gt; แอป &gt; Chrome &gt; กล้อง</i> และตั้ง <i>Page Info &gt; Permissions &gt; Camera</i> เป็น <b>Always Allow</b> (หากปิดแอปแล้วยังถามสิทธิ์กล้องซ้ำ แนะนำเปิดระบบผ่าน <b>Safari</b> ซึ่งตั้งค่ารายเว็บได้ถาวรกว่า)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Camera 3-step action -->
+                    <div class="space-y-3 pt-2">
+                        <h4 class="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-camera text-[#00744B]"></i>
+                            <span>ขั้นตอนการถ่ายภาพยืนยันตัวตน (กล้อง Mirror แนวตั้ง 3:4)</span>
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 text-center space-y-2">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-[#00744B] font-black flex items-center justify-center mx-auto text-sm">1</div>
+                                <div class="font-bold text-slate-800 dark:text-white">กด "เปิดกล้องเพื่อถ่ายรูป"</div>
+                                <p class="text-slate-500">ระบบจะเปิดกล้องหน้าในโหมดกระจกเงา (Mirror) ปรับภาพให้อัตโนมัติ</p>
+                                <button type="button" class="mockup-btn px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-700 cursor-pointer" data-title="ปุ่มเปิดกล้อง" data-desc="ในการใช้งานจริง ปุ่มนี้จะร้องขอสิทธิ์เปิดกล้องของอุปกรณ์และเริ่มสตรีมภาพสดในสัดส่วน 3:4">
+                                    <i class="fa-solid fa-video mr-1"></i>ทดสอบเปิดกล้อง
+                                </button>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 text-center space-y-2">
+                                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-black flex items-center justify-center mx-auto text-sm">2</div>
+                                <div class="font-bold text-slate-800 dark:text-white">กด "ถ่ายภาพเดี๋ยวนี้"</div>
+                                <p class="text-slate-500">จัดใบหน้าให้อยู่ในกรอบแนวตั้ง 3:4 แล้วกดปุ่มสีส้มเพื่อจับภาพ</p>
+                                <button type="button" class="mockup-btn px-3 py-1.5 rounded-xl bg-amber-500 text-white font-bold text-[11px] hover:bg-amber-600 cursor-pointer" data-title="ปุ่มถ่ายภาพเดี๋ยวนี้" data-desc="ในการใช้งานจริง ปุ่มนี้จะจับภาพนิ่งจากวิดีโอสตีรม บีบอัดภาพ และปิดกล้องทันทีเพื่อประหยัดแบตเตอรี่">
+                                    <i class="fa-solid fa-camera mr-1"></i>ทดสอบถ่ายภาพ
+                                </button>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 text-center space-y-2">
+                                <div class="w-8 h-8 rounded-full bg-sky-100 text-[#0971CE] font-black flex items-center justify-center mx-auto text-sm">3</div>
+                                <div class="font-bold text-slate-800 dark:text-white">ตรวจสอบรูป หรือ "ถ่ายรูปใหม่"</div>
+                                <p class="text-slate-500">ระบบจะปิดกล้องทันทีเพื่อประหยัดแบตเตอรี่ หากภาพไม่ชัดสามารถกดถ่ายใหม่ได้</p>
+                                <button type="button" class="mockup-btn px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-300 cursor-pointer" data-title="ปุ่มถ่ายรูปใหม่" data-desc="ในการใช้งานจริง ปุ่มนี้จะล้างภาพเดิมและเปิดกล้องใหม่อีกครั้งให้ท่านจัดท่าทาง">
+                                    <i class="fa-solid fa-rotate-left mr-1"></i>ทดสอบถ่ายใหม่
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- In-Frame Floating Shutter & Line Fallback Enhancements -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-xs">
+                            <div class="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/40 space-y-1.5">
+                                <strong class="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5 text-xs">
+                                    <i class="fa-solid fa-circle-dot text-emerald-600"></i>ปุ่มชัตเตอร์ลอยบนกรอบกล้อง (In-Frame Shutter):
+                                </strong>
+                                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    ขณะเปิดกล้อง จะมีปุ่มชัตเตอร์กลมสีขาว-ทองลอยอยู่บริเวณกึ่งกลางล่างของกรอบรูปภาพ ช่วยให้ท่านสามารถใช้นิ้วแตะถ่ายภาพได้โดยตรงบนหน้าจอกล้อง สะดวกต่อการถือสมาร์ตโฟนถ่ายรูปด้วยมือเดียว
+                                </p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40 space-y-1.5">
+                                <strong class="font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5 text-xs">
+                                    <i class="fa-brands fa-line text-emerald-500 text-sm"></i>การเปิดผ่านแอป LINE หรือเครื่องไม่มีกล้อง (Smart Fallback):
+                                </strong>
+                                <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    หากเปิดระบบผ่านลิงก์ในแอป LINE (In-App Browser) หรือคอมพิวเตอร์ที่ไม่มีกล้องเว็บแคม ระบบจะตรวจจับอัตโนมัติและเปลี่ยนปุ่มถ่ายรูปให้เปิดเมนูเลือกรูปถ่ายจากเครื่องหรือถ่ายด้วยกล้องมือถือได้ทันที โดยใช้ปุ่มเดียว ไม่ต้องมีปุ่มแยกให้สับสน
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GPS Location Features -->
+                    <div class="space-y-3 pt-2">
+                        <h4 class="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-map-location-dot text-[#0971CE]"></i>
+                            <span>การอ่านพิกัด GPS, โหมด "ในสถานที่ / นอกสถานที่" และเกณฑ์รัศมี</span>
+                        </h4>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-3">
+                            <p>
+                                ระบบจะดึงพิกัดละติจูดและลองจิจูดจากชิป GPS (High Accuracy) พร้อมระบบค้นหาชื่อสถานที่ใกล้เคียง <b>6 ระดับ (6-Tier Places Resolution)</b> และแสดงแผนที่ Leaflet ย่อส่วน รวมถึงรองรับการเลือกโหมดปฏิบัติงาน 2 รูปแบบ:
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div class="p-3 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 space-y-1">
+                                    <div class="font-extrabold text-[#00744B] dark:text-emerald-300"><i class="fa-solid fa-building mr-1"></i>1. ในสถานที่ (Onsite + Geofence)</div>
+                                    <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                                        ระบบตรวจสอบระยะห่างจากสถานที่ราชการทุกแห่งที่ SuperAdmin กำหนดไว้ (รองรับค่าเผื่อสัญญาณ GPS +25 เมตร) หากหน่วยงานเปิดการจำกัดรัศมีและอยู่นอกเขต ปุ่มลงเวลาในสถานที่จะถูกระงับเพื่อป้องกันการลงเวลาผิดพลาด
+                                    </p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/50 space-y-1">
+                                    <div class="font-extrabold text-[#0971CE] dark:text-sky-300"><i class="fa-solid fa-route mr-1"></i>2. นอกสถานที่ (Offsite + ปักหมุด)</div>
+                                    <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                                        ใช้เมื่อปฏิบัติงานภาคสนาม อบรม หรือ WFH โดยเลือกป้าย <b>ลักษณะงานนอกสถานที่</b> และสามารถเปิดหน้าต่างแผนที่เพื่อ <b>ค้นหาชื่อสถานที่หรือปักหมุดจุดปฏิบัติงานจริง</b> ได้อย่างแม่นยำ
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                                <button type="button" class="mockup-btn px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-300 cursor-pointer" data-title="รีเฟรชพิกัด GPS ล่าสุด" data-desc="ในการใช้งานจริง ปุ่มนี้จะสั่งให้อุปกรณ์อ่านสัญญาณดาวเทียม GPS ใหม่โดยไม่ใช้ค่าเก่าจากแคช พร้อมคำนวณรัศมีสถานที่ราชการใหม่ทันที">
+                                    <i class="fa-solid fa-arrows-rotate mr-1 text-[#00744B]"></i>ปุ่ม "รีเฟรช GPS"
+                                </button>
+                                <button type="button" class="mockup-btn px-3 py-1.5 rounded-xl bg-sky-100 dark:bg-sky-950/60 text-[#0971CE] font-bold hover:bg-sky-200 cursor-pointer" data-title="ขยายดูแผนที่ / ค้นหาสถานที่" data-desc="ในการใช้งานจริง ปุ่มนี้จะเปิดแผนที่แบบขยาย (หรือหน้าต่างปักหมุดค้นหาสถานที่เมื่อเลือกโหมดนอกสถานที่)">
+                                    <i class="fa-solid fa-up-right-from-square mr-1"></i>ปุ่ม "ดูแผนที่ / ปักหมุด"
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 5: ลงเวลาปกติ & กล่องยืนยัน -->
+            <section id="topic-5" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">5</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การลงเวลาเข้า–ออกงานรูปแบบปกติ และกล่องยืนยันข้อมูล</h3>
+                        <p class="text-xs text-slate-500">Dropdown เริ่มต้นค่าว่างป้องกันบันทึกผิด และกล่องยืนยัน SweetAlert Soft UI Dashboard</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p>
+                        ใน <b>รูปแบบปกติ (2-Click Mode)</b> ท่านจะต้องลงเวลา 2 ครั้งในแต่ละวัน คือ <b>เวลาเข้างาน</b> ในตอนเช้า และ <b>เวลาเลิกงาน</b> เมื่อเสร็จสิ้นการปฏิบัติราชการ
+                    </p>
+
+                    <!-- Steps for Regular Checkin -->
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#00744B] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">ถ่ายภาพและตรวจ GPS:</strong>
+                                <span> เปิดกล้องถ่ายภาพยืนยันตัวตนให้เรียบร้อย และรอให้พิกัด GPS แสดงชื่อสถานที่ใกล้เคียง</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#00744B] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">เลือกช่วงเวลาทำงาน:</strong>
+                                <span> ที่ช่อง Dropdown <b>"เลือกช่วงเวลาทำงาน"</b> ให้คลิกเลือกช่วงเวลา เช่น <i>"เวลาราชการปกติ (08:30 - 16:30 น.)"</i></span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#00744B] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">กดปุ่มสีเขียว "บันทึกลงเวลาเข้าปฏิบัติงาน":</strong>
+                                <span> (เมื่อถึงเวลาเลิกงาน ปุ่มจะเปลี่ยนข้อความเป็น <i>"บันทึกลงเวลาเลิกงาน"</i> สีน้ำเงิน อัตโนมัติ)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mock Confirmation Dialogs (Normal vs Special Shift) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                        <!-- Card 1: Normal Shift Modal -->
+                        <div class="p-5 rounded-3xl bg-slate-50 dark:bg-slate-900/70 border-2 border-emerald-500/30 shadow-lg space-y-3">
+                            <div class="text-center font-extrabold text-sm text-slate-800 dark:text-white">
+                                <i class="fa-solid fa-clipboard-check text-[#00744B] mr-1"></i>กล่องยืนยัน: รูปแบบปกติ
+                            </div>
+                            <p class="text-[11px] text-slate-500 text-center">แสดงเมื่อลงเวลาราชการปกติ (เข้างาน / ออกงาน)</p>
+                            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 dark:text-slate-400">ชื่อผู้ลงเวลา:</span>
+                                    <span class="font-bold text-slate-800 dark:text-white">นายสมชาย มั่นคง</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 dark:text-slate-400">ช่วงเวลาบันทึก:</span>
+                                    <span class="font-bold text-[#00744B] dark:text-emerald-400">เวลาเข้างาน</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500 dark:text-slate-400">เวลาขณะบันทึก:</span>
+                                    <span class="font-mono font-bold text-slate-700 dark:text-slate-200">08:24:15 น.</span>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-700">
+                                    <div class="text-slate-500 dark:text-slate-400">สถานที่ ตาม GPS:</div>
+                                    <div class="font-bold text-slate-800 dark:text-white mt-0.5">สำนักเทศกิจ ถนนกัลยาณไมตรี</div>
+                                    <div class="text-[11px] font-mono text-slate-400">(พิกัด: 13.750123, 100.495678)</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pt-1 text-xs font-bold">
+                                <button type="button" class="mockup-btn flex-1 py-2 text-center rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 cursor-pointer" data-title="ยกเลิกการบันทึกเวลา" data-desc="ในการใช้งานจริง ปุ่มนี้จะปิดกล่องยืนยันโดยไม่บันทึกข้อมูล">ยกเลิก</button>
+                                <button type="button" class="mockup-btn flex-1 py-2 text-center rounded-xl bg-[#00744B] text-white shadow-md flex items-center justify-center gap-1.5 hover:bg-[#005B3A] cursor-pointer" data-title="ยืนยันบันทึกเวลาเข้างาน" data-desc="ในการใช้งานจริง ระบบจะอัปโหลดภาพถ่ายไปยัง Google Drive และบันทึกข้อมูลลงเวลาเข้าฐานข้อมูลทันที">
+                                    <i class="fa-solid fa-check"></i>
+                                    <span>ยืนยันบันทึกเวลา</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Special Shift Modal -->
+                        <div class="p-5 rounded-3xl bg-slate-50 dark:bg-slate-900/70 border-2 border-purple-500/30 shadow-lg space-y-3">
+                            <div class="text-center font-extrabold text-sm text-slate-800 dark:text-white">
+                                <i class="fa-solid fa-clipboard-check text-[#480080] dark:text-purple-400 mr-1"></i>กล่องยืนยัน: รูปแบบพิเศษ / กะ
+                            </div>
+                            <p class="text-[11px] text-slate-500 text-center">แสดงเมื่อเลือกกะนอกเวลา / เวรดึก / กำหนดเวลาเอง</p>
+                            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+                                <div class="flex justify-between items-center gap-2">
+                                    <span class="text-slate-500 dark:text-slate-400 shrink-0">ชื่อช่วงเวลา:</span>
+                                    <span class="font-bold text-[#480080] dark:text-purple-300 text-right">ปฏิบัติงานนอกเวลาราชการ (OT)</span>
+                                </div>
+                                <div class="flex justify-between items-center gap-2">
+                                    <span class="text-slate-500 dark:text-slate-400 shrink-0">เวลาเข้างาน:</span>
+                                    <span class="font-mono font-bold text-slate-700 dark:text-slate-200">16:30 น.</span>
+                                </div>
+                                <div class="flex justify-between items-center gap-2">
+                                    <span class="text-slate-500 dark:text-slate-400 shrink-0">เวลาออกงาน:</span>
+                                    <span class="font-mono font-bold text-slate-700 dark:text-slate-200">20:30 น.</span>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-700">
+                                    <div class="text-slate-500 dark:text-slate-400">สถานที่ ตาม GPS:</div>
+                                    <div class="font-bold text-slate-800 dark:text-white mt-0.5">สำนักเทศกิจ ถนนกัลยาณไมตรี</div>
+                                    <div class="text-[11px] font-mono text-slate-400">(พิกัด: 13.750123, 100.495678)</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pt-1 text-xs font-bold">
+                                <button type="button" class="mockup-btn flex-1 py-2 text-center rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 cursor-pointer" data-title="ยกเลิกการบันทึกเวลา" data-desc="ในการใช้งานจริง ปุ่มนี้จะปิดกล่องยืนยันโดยไม่บันทึกข้อมูล">ยกเลิก</button>
+                                <button type="button" class="mockup-btn flex-1 py-2 text-center rounded-xl bg-[#480080] text-white shadow-md flex items-center justify-center gap-1.5 hover:bg-[#380063] cursor-pointer" data-title="ยืนยันบันทึกเวลากะพิเศษ" data-desc="ในการใช้งานจริง ระบบจะบันทึกเวลากะพิเศษพร้อมรูปถ่ายและพิกัดลงในตารางประวัติ">
+                                    <i class="fa-solid fa-check"></i>
+                                    <span>ยืนยันบันทึกเวลา</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note about GPS off -->
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                        <strong class="font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-[#0971CE]"></i>ข้อสังเกตกรณีหน่วยงานปิดการบังคับ GPS:
+                        </strong>
+                        <p>
+                            หากผู้ดูแลระบบสูงสุดตั้งค่า <b>ปิดการบังคับพิกัด GPS</b> (<code class="font-mono">require_gps = false</code>) ส่วนแสดงผล <i>"สถานที่ ตาม GPS"</i> จะถูกซ่อนและไม่ปรากฏในกล่องยืนยันทั้งสองรูปแบบ และท่านสามารถกดบันทึกเวลาได้แม้ไม่ได้เปิด GPS
+                        </p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border-l-4 border-[#00744B] text-emerald-900 dark:text-emerald-200 text-xs leading-relaxed">
+                        <strong class="font-bold flex items-center gap-1.5 mb-1 text-sm text-emerald-800 dark:text-emerald-300">
+                            <i class="fa-solid fa-lightbulb"></i>เคล็ดลับการตรวจสอบสถานะ:
+                        </strong>
+                        หลังกดยืนยัน ระบบจะอัปโหลดภาพถ่ายไปยัง Google Drive และบันทึกเวลาลงฐานข้อมูล จากนั้นการ์ด "เวลาเข้างาน" จะเปลี่ยนสถานะเป็น <b>"ตรงเวลา"</b> (สีเขียว) หรือ <b>"สาย"</b> (สีส้ม) ตามเกณฑ์เวลามาตรฐานของหน่วยงาน
+                    </div>
+
+                    <!-- Normal Hours Checkin Lock Notice with Explicit Guidance -->
+                    <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-200 space-y-2.5 shadow-sm">
+                        <div class="flex items-center gap-2 font-bold text-sm text-amber-800 dark:text-amber-300">
+                            <i class="fa-solid fa-circle-exclamation text-amber-600"></i>
+                            <span>กรณีหน่วยงานเปิดใช้งาน: "ปิดการลงเวลาในช่วงเวลาปกติ (08:30 - 16:30 น.)"</span>
+                        </div>
+                        <p class="leading-relaxed text-slate-600 dark:text-slate-300">
+                            หากหน่วยงานของท่านกำหนดนโยบายให้ลงเวลาปกติผ่านเครื่องสแกนหลัก และเปิดใช้ฟังก์ชันปิดรับการลงเวลาหน้าหลัก เมื่อท่านเข้าใช้งานในช่วงเวลา 08:30 - 16:30 น. จะพบพฤติกรรมของระบบดังนี้:
+                        </p>
+                        <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-amber-200/80 dark:border-amber-800/50 space-y-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-bold text-[11px]">ข้อความปุ่มบันทึก:</span>
+                                <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">ปิดรับการลงเวลาในช่วงเวลาปกติ (08:30 - 16:30 น.) [ปุ่มปิดการทำงาน/สีเทา]</span>
+                            </div>
+                            <div class="text-[11px] text-amber-700 dark:text-amber-300 font-medium">
+                                <i class="fa-solid fa-comment-dots mr-1"></i>ข้อความเตือนบนหน้าจอ: <i>"ขณะนี้อยู่ในช่วงเวลาราชการปกติ (08:30 - 16:30 น.) ระบบเปิดใช้งานฟังก์ชันปิดรับการลงเวลาในเวลาปกติ จึงไม่สามารถบันทึกลงเวลาได้"</i>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/40 space-y-1 text-slate-700 dark:text-slate-300">
+                            <b class="text-[#00744B] dark:text-emerald-400 block font-bold">💡 คำแนะนำแนวทางปฏิบัติสำหรับบุคลากร:</b>
+                            <ul class="list-disc pl-4 space-y-1 text-[11px] text-slate-600 dark:text-slate-300">
+                                <li><b>หากปฏิบัติงานนอกเวลาหรือเวรผลัด:</b> ให้คลิกเลือกช่วงเวลาหรือกะการทำงานของท่านใน Dropdown เพื่อบันทึกเวลาตามกะที่ได้รับมอบหมาย</li>
+                                <li><b>หากมีภารกิจไปราชการหรือเหตุขัดข้อง:</b> ให้กดปุ่ม <b>"ขอลงเวลากรณีพิเศษ"</b> ด้านล่างการ์ด เพื่อกรอกแบบคำขอพร้อมแนบเหตุผลเสนอผู้บังคับบัญชาอนุมัติ โดยสามารถยื่นคำขอได้ตลอดเวลา 24 ชั่วโมง</li>
+                            </ul>
+                        </div>
+                    
+
+                        <!-- Callout Alert: ตัวอย่างสถานการณ์จริง 16:02 น. -->
+                        <div class="p-4 rounded-xl bg-purple-50/90 dark:bg-purple-950/40 border-2 border-purple-300 dark:border-purple-700/60 text-purple-950 dark:text-purple-200 space-y-2 shadow-xs">
+                            <div class="font-bold text-xs sm:text-sm text-purple-900 dark:text-purple-200 flex items-center gap-2">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                <span>💡 ตัวอย่างสถานการณ์จริง: การลงเวลากะนอกเวลา (OT) ขณะระบบปิดรับเวลาปกติ</span>
+                            </div>
+                            <p class="text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                                แม้เวลาที่ท่านเปิดแอปจะเป็น <b>16:02 น.</b> (ซึ่งระบบจะขึ้นปุ่มสีเทาและแจ้งปิดรับการลงเวลาในเวลาปกติ 08:30 - 16:30 น.) แต่หากท่านมีเวรปฏิบัติงานนอกเวลา (เช่น กะ 17:00 - 01:00 น.) ที่ได้รับสิทธิ์เริ่มเข้างานล่วงหน้า 60 นาที ระบบจะแสดง Dropdown <b>"เลือกช่วงเวลาปฏิบัติงานนอกเวลา"</b> ให้ท่านกดเลือกกะ 17:00 น. และปุ่มจะเปลี่ยนเป็น <b>"บันทึกลงเวลาปฏิบัติงานนอกเวลา"</b> ให้กดบันทึกได้ทันที โดยไม่ต้องรอให้ถึง 16:30 น. หรือ 17:00 น.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 6: ลงเวลารูปแบบพิเศษ & กะ -->
+            <section id="topic-6" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">6</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การลงเวลารูปแบบพิเศษ / นอกเวลา / กะทำงาน (Dropdown)</h3>
+                        <p class="text-xs text-slate-500">กฎการเลือกช่วงเวลาจาก Dropdown การลงเวลากะข้ามวัน โหมด Single-click และ Real-time shift filter</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <!-- Dropdown rule alert -->
+                    <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 text-amber-900 dark:text-amber-200 text-xs space-y-1.5">
+                        <div class="font-bold text-sm text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation"></i>กฎสำคัญ: Dropdown "เลือกช่วงเวลาทำงาน" เริ่มต้นเป็นค่าว่าง
+                        </div>
+                        <p>
+                            ระบบกำหนดให้ช่อง Dropdown เริ่มต้นเป็นค่า <b>"-- กรุณาเลือกช่วงเวลาปฏิบัติงาน --"</b> เพื่อป้องกันการบันทึกผิดพลาด หากท่านกดปุ่มบันทึกลงเวลาโดยยังไม่ได้เลือกช่วงเวลา ระบบจะแสดงกล่องเตือน <i>"กรุณาเลือกช่วงเวลาปฏิบัติงาน"</i> พร้อมเลื่อนหน้าจอไปยัง Dropdown และตีกรอบสีแดงให้ทันที
+                        </p>
+                    </div>
+
+                    <!-- Work Shift Types -->
+                    <div class="space-y-3 pt-2">
+                        <h4 class="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-clock text-[#00744B]"></i>
+                            <span>ประเภทช่วงเวลาปฏิบัติงานที่สามารถเลือกได้:</span>
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-1">
+                                <span class="font-extrabold text-[#00744B] block">1. เวลาราชการปกติ (08:30 - 16:30 น.)</span>
+                                <p class="text-slate-500">สำหรับบุคลากรที่ปฏิบัติราชการตามเวลาราชการมาตรฐานของกรุงเทพมหานคร</p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-1">
+                                <span class="font-extrabold text-[#480080] dark:text-purple-300 block">2. ปฏิบัติงานนอกเวลา (OT / ผลัดเวร)</span>
+                                <p class="text-slate-500">สำหรับเวรดึก กะบ่าย หรือการปฏิบัติราชการนอกเวลา (จะแสดงป้ายสีม่วงในรายงาน)</p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-1">
+                                <span class="font-extrabold text-blue-600 dark:text-blue-400 block">3. กะข้ามวัน (Overnight Shift)</span>
+                                <p class="text-slate-500">กะที่เริ่มช่วงค่ำและเลิกงานในวันถัดไป เช่น 23:00 - 07:00 น. ระบบจะคำนวณวันทำงานให้อย่างถูกต้อง</p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-1">
+                                <span class="font-extrabold text-amber-600 dark:text-amber-400 block">4. กำหนดเวลาเอง (Custom Shift)</span>
+                                <p class="text-slate-500">หากเลือกหัวข้อ "อื่นๆ (ระบุเวลาเอง)" จะมีช่องให้ท่านพิมพ์เวลาเข้างานและเลิกงานได้โดยตรง</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Single-click checkin explanation -->
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                        <strong class="font-bold text-slate-800 dark:text-white block text-sm">
+                            <i class="fa-solid fa-bolt text-[#00744B] mr-1"></i>กรณีหน่วยงานเปิดใช้ "โหมดบันทึกครั้งเดียว (Single-Click Check-in)":
+                        </strong>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            ปุ่มบันทึกจะแสดงข้อความว่า <b>"บันทึกลงเวลาปฏิบัติงาน (บันทึกครั้งเดียว)"</b> โดยเมื่อท่านกดบันทึกและยืนยัน ระบบจะลงเวลาให้ทั้งขาเข้าและขาออกพร้อมกันตามเกณฑ์เวลาของกะนั้นๆ เหมาะสำหรับภารกิจภาคสนามหรือการอบรมนอกสถานที่
+                        </p>
+                    </div>
+
+                    <!-- Real-time shift filter & Early Shift Checkin Benefit -->
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                            <strong class="font-bold text-slate-800 dark:text-white block text-sm">
+                                <i class="fa-solid fa-filter text-[#0971CE] mr-1"></i>การกรองกะตามเวลาจริง (Real-time Shift Filter):
+                            </strong>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                หาก SuperAdmin เปิดฟังก์ชันนี้ ช่อง Dropdown จะแสดงเฉพาะกะที่ตรงกับเวลาขณะที่ท่านเปิดหน้าจอเท่านั้น ช่วยลดความผิดพลาดในการเผลอเลือกกะผิดเวลา
+                            </p>
+                        </div>
+
+                        <!-- สิทธิประโยชน์และการเลือกลงเวลาก่อนเวลาเริ่มงานจริง -->
+                        <div class="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/50 space-y-2.5">
+                            <div class="flex items-center gap-2 font-bold text-sm text-blue-900 dark:text-blue-200">
+                                <i class="fa-solid fa-clock-rotate-left text-blue-600 dark:text-blue-400"></i>
+                                <span>สิทธิประโยชน์: การเลือกลงเวลาก่อนเริ่มงานจริง (สำหรับกะที่อนุญาตเข้าก่อนเวลาได้)</span>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                                สำหรับช่วงเวลาปฏิบัติงานที่หน่วยงานเปิดตัวเลือก <b>"ทำงานก่อนเวลาเริ่มงานได้" (<code class="font-mono text-blue-700 dark:text-blue-300 font-bold">allow_early_checkin</code>)</b> บุคลากรที่ต้องมาเตรียมความพร้อม ประชุมชี้แจง หรือรับมอบเวรก่อนเริ่มผลัดจริง สามารถเปิดแอปและมองเห็นกะนี้ใน Dropdown ได้ก่อนเวลาเริ่มงานตามเกณฑ์ที่หน่วยงานกำหนด (ค่าเริ่มต้น 30 นาที):
+                            </p>
+                            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-700/60 space-y-1.5 text-xs">
+                                <b class="text-blue-800 dark:text-blue-300 block font-bold">ตัวอย่างการใช้งานจริง:</b>
+                                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                                    • กะปฏิบัติงานนอกเวลา (OT) มีเวลาทำงานจริงคือ <b>17:00 - 01:00 น.</b><br>
+                                    • หน่วยงานตั้งค่าเวลาเริ่มทำงานก่อนเวลาไว้ <b>30 นาที</b><br>
+                                    • <b>ผลลัพธ์:</b> ตั้งแต่เวลา <b>16:30 น.</b> เป็นต้นไป เมื่อเจ้าหน้าที่เปิดหน้าแอป จะพบชื่อกะนี้ปรากฏใน Dropdown ทันที สามารถกดเลือก ถ่ายภาพ และบันทึกเวลาเข้างานเพื่อเริ่มเตรียมผลัดได้ล่วงหน้าอย่างถูกต้อง โดยไม่ต้องรอให้ถึง 17:00 น.
+                                </p>
+                            </div>
+
+                            <!-- กล่องคำแนะนำไฮไลต์พิเศษ (Callout Alert): ตัวอย่างสถานการณ์จริง 16:02 น. -->
+                            <div class="p-3.5 rounded-xl bg-purple-100/70 dark:bg-purple-950/50 border border-purple-300/80 dark:border-purple-700/60 space-y-1.5 text-xs text-purple-950 dark:text-purple-200">
+                                <b class="text-[#480080] dark:text-purple-300 font-bold flex items-center gap-1.5">
+                                    <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                    <span>💡 ตัวอย่างสถานการณ์จริง:</span>
+                                </b>
+                                <p class="leading-relaxed text-slate-700 dark:text-slate-300 text-[11px]">
+                                    แม้เวลาที่ท่านเปิดแอปจะเป็น <b>16:02 น.</b> (ซึ่งระบบจะขึ้นปุ่มสีเทาและแจ้งปิดรับการลงเวลาในเวลาปกติ 08:30 - 16:30 น.) แต่หากท่านมีเวรปฏิบัติงานนอกเวลา (เช่น กะ 17:00 - 01:00 น.) ที่ได้รับสิทธิ์เริ่มเข้างานล่วงหน้า 60 นาที ระบบจะแสดง Dropdown <b>"เลือกช่วงเวลาปฏิบัติงานนอกเวลา"</b> ให้ท่านกดเลือกกะ 17:00 น. และปุ่มจะเปลี่ยนเป็น <b>"บันทึกลงเวลาปฏิบัติงานนอกเวลา"</b> ให้กดบันทึกได้ทันที โดยไม่ต้องรอให้ถึง 16:30 น. หรือ 17:00 น.
+                                </p>
+                            </div>
+                            <div class="text-[11px] text-blue-800 dark:text-blue-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>หากเปิดหน้าแอปแล้วไม่พบกะที่ต้องการ ให้ตรวจสอบเวลาปัจจุบันว่าถึงช่วงเวลาที่เปิดให้เลือกล่วงหน้าแล้วหรือไม่</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 7: คำขอพิเศษ & ยกเลิกคำขอ -->
+            <section id="topic-7" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">7</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การยื่นคำขอลงเวลากรณีพิเศษ / ย้อนหลัง และการยกเลิกคำขอ</h3>
+                        <p class="text-xs text-slate-500">สำหรับไปราชการนอกสถานที่ ลืมลงเวลา หรือมีเหตุจำเป็นเร่งด่วน พร้อมแนบหลักฐาน</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p>
+                        หากท่านไปราชการนอกสถานที่ อบรมสัมมนา หรือระบบอินเทอร์เน็ตขัดข้องจนไม่สามารถลงเวลาตามปกติได้ ท่านสามารถยื่น <b>"คำขอลงเวลากรณีพิเศษ"</b> เพื่อให้ผู้บังคับบัญชาหรือผู้ดูแลระบบพิจารณาอนุมัติได้
+                    </p>
+
+                    <!-- Steps for Special Request -->
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#480080] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">เปิดแบบคำขอ:</strong>
+                                <span> บน PC ให้กดปุ่ม <b>"ขอลงเวลากรณีพิเศษ"</b> ในแท็บที่ 3 ("คำขอพิเศษ") หรือบนสมาร์ตโฟนให้เปิด Drawer แล้วเลือกเมนู <b>"คำขอพิเศษ"</b> จากนั้นกดปุ่มสีม่วง <i>"กรอกแบบคำขอลงเวลากรณีพิเศษ"</i></span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#480080] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">กรอกข้อมูลแบบ Step-by-Step 4 ขั้นตอน:</strong>
+                                <ul class="list-disc pl-5 mt-1 space-y-1 text-xs">
+                                    <li><b>ขั้นตอนที่ 1 — วันที่, ช่วงเวลา และเหตุผลคำขอ:</b> เลือกวันที่ปฏิบัติราชการ, ช่วงเวลาทำงาน (หากหน่วยงานเปิดปิดรับเวลาปกติ ระบบจะซ่อนตัวเลือก "เวลาราชการปกติ" ให้อัตโนมัติ) และเลือกเหตุผลจากรายการของหน่วยงาน (เช่น ลืมลงเวลา, อุปกรณ์ขัดข้อง)</li>
+                                    <li><b>ขั้นตอนที่ 2 — โหมดสถานที่ปฏิบัติงาน:</b> เลือก <b>ในสถานที่</b> (เลือกรายชื่อสถานที่ราชการของหน่วยงานจาก Dropdown) หรือ <b>นอกสถานที่</b> (ค้นหาชื่อสถานที่และปักหมุดพิกัดบนแผนที่จริง)</li>
+                                    <li><b>ขั้นตอนที่ 3 — แนบรูปภาพหรือหลักฐาน (ถ้ามี):</b> เช่น หนังสือเชิญประชุม หรือภาพถ่ายขณะปฏิบัติงาน</li>
+                                    <li><b>ขั้นตอนที่ 4 — ตรวจสอบสรุปข้อมูลและยืนยันส่งคำขอ:</b> ทบทวนข้อมูลทั้งหมดก่อนกดยืนยันส่งเข้าสู่ระบบอนุมัติ</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="w-6 h-6 rounded-full bg-[#480080] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+                            <div>
+                                <strong class="text-slate-800 dark:text-white">กด "ส่งคำขอลงเวลากรณีพิเศษ":</strong>
+                                <span> คำขอจะถูกส่งไปยังตารางอนุมัติของผู้ดูแลระบบ และแสดงป้ายสถานะ <span class="px-2 py-0.5 rounded-full bg-purple-100 text-[#480080] dark:bg-purple-950/60 dark:text-purple-300 font-bold text-[10px]">รออนุมัติ</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cancellation of Pending Requests -->
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                        <strong class="font-bold text-slate-800 dark:text-white block text-sm">
+                            <i class="fa-solid fa-trash-can text-rose-500 mr-1"></i>การยกเลิกคำขอที่อยู่ระหว่างรออนุมัติ:
+                        </strong>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            หากท่านส่งคำขอผิดพลาด ท่านสามารถเข้าไปที่แท็บหรือเมนู <b>"คำขอพิเศษ"</b> แล้วกดปุ่ม <b>"ลบคำขอ"</b> (ไอคอนรูปถังขยะสีแดง) ในคอลัมน์จัดการบน PC หรือท้ายการ์ดคำขอในมุมมองมือถือได้ด้วยตนเอง <i>(สามารถยกเลิกได้เฉพาะรายการที่สถานะยังเป็น "รออนุมัติ" เท่านั้น หากผู้ดูแลกดอนุมัติหรือปฏิเสธแล้วจะไม่สามารถลบได้)</i>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 8: ประวัติการลงเวลา & 5 สถานะ -->
+            <section id="topic-8" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">8</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การตรวจสอบประวัติการลงเวลา และความหมายของป้ายสถานะ</h3>
+                        <p class="text-xs text-slate-500">วิธีดูประวัติวันปัจจุบันและย้อนหลัง พร้อมตารางสรุปความหมายของ 5 สถานะราชการ</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p>
+                        ท่านสามารถตรวจสอบข้อมูลการลงเวลาของตนเองได้ตลอดเวลาผ่านแท็บ <b>"ประวัติการลงเวลา"</b> บน PC (แสดงแบบตาราง) หรือผ่านเมนู <b>"ประวัติการลงเวลา"</b> ใน Drawer บนสมาร์ตโฟน (แสดงแบบการ์ดเรียงข้อมูล เวลาเข้างาน–พิกัด–สถานะเข้างาน และ เวลาออกงาน–พิกัด–สถานะออกงาน อย่างชัดเจน) โดยมี 2 แผงย่อย:
+                    </p>
+                    <ul class="list-disc pl-5 space-y-1 text-xs">
+                        <li><b>แผง "วันปัจจุบัน":</b> แสดงรายการที่ลงเวลาในวันนี้ทันที เพื่อให้มั่นใจว่าข้อมูลเข้าสู่ระบบเรียบร้อย</li>
+                        <li><b>แผง "ย้อนหลัง":</b> แสดงประวัติการลงเวลาย้อนหลังทั้งหมด (สูงสุด 30 รายการล่าสุด) พร้อมปุ่มเลือกขนาดหน้า (5, 10, 15, 20, 30 รายการต่อหน้า) และปุ่มเปลี่ยนหน้าก่อนหน้า/ถัดไป</li>
+                    </ul>
+
+                    <!-- 5 Status Badges Table with overflow-x-auto wrapper -->
+                    <div class="pt-2">
+                        <div class="font-bold text-slate-800 dark:text-white text-sm mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-tags text-[#00744B]"></i>
+                            <span>ตารางความหมายของป้ายสถานะการปฏิบัติราชการ (5 สถานะ):</span>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-xs">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs text-left min-w-[500px]">
+                                    <thead class="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 uppercase font-black">
+                                        <tr>
+                                            <th class="py-3 px-3 w-32 text-center">ป้ายสถานะ</th>
+                                            <th class="py-3 px-3 w-28">รหัสระบบ</th>
+                                            <th class="py-3 px-4">ความหมายและเกณฑ์การคำนวณ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                            <td class="py-3 px-3 text-center">
+                                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-[#00744B] dark:bg-emerald-950/60 dark:text-emerald-300">
+                                                    ตรงเวลา
+                                                </span>
+                                            </td>
+                                            <td class="py-3 px-3 font-mono text-slate-500 font-semibold">ontime</td>
+                                            <td class="py-3 px-4 text-slate-600 dark:text-slate-300">
+                                                ลงเวลาเข้างานภายในเวลามาตรฐาน หรือไม่เกินเวลาที่ได้รับอนุโลม (Grace Period)
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                            <td class="py-3 px-3 text-center">
+                                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                                    สาย
+                                                </span>
+                                            </td>
+                                            <td class="py-3 px-3 font-mono text-slate-500 font-semibold">late</td>
+                                            <td class="py-3 px-4 text-slate-600 dark:text-slate-300">
+                                                ลงเวลาเข้างานเกินเวลามาตรฐานและเกินเวลาผ่อนผันสายที่หน่วยงานกำหนด
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                            <td class="py-3 px-3 text-center">
+                                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800 dark:bg-yellow-950/60 dark:text-yellow-300">
+                                                    กลับก่อน
+                                                </span>
+                                            </td>
+                                            <td class="py-3 px-3 font-mono text-slate-500 font-semibold">early_leave</td>
+                                            <td class="py-3 px-4 text-slate-600 dark:text-slate-300">
+                                                ลงเวลาเลิกงานก่อนเวลาเลิกงานมาตรฐานของกะนั้นๆ โดยไม่มีคำขออนุมัติ
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                            <td class="py-3 px-3 text-center">
+                                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
+                                                    รออนุมัติ
+                                                </span>
+                                            </td>
+                                            <td class="py-3 px-3 font-mono text-slate-500 font-semibold">pending_approval</td>
+                                            <td class="py-3 px-4 text-slate-600 dark:text-slate-300">
+                                                รายการที่ยื่นขอลงเวลากรณีพิเศษ อยู่ระหว่างรอผู้ดูแลระบบตรวจสอบและพิจารณา
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                            <td class="py-3 px-3 text-center">
+                                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
+                                                    ขาด / ปฏิเสธ
+                                                </span>
+                                            </td>
+                                            <td class="py-3 px-3 font-mono text-slate-500 font-semibold">absent / rejected</td>
+                                            <td class="py-3 px-4 text-slate-600 dark:text-slate-300">
+                                                ไม่ปรากฏบันทึกการลงเวลาเข้างานในวันดังกล่าว หรือคำขอพิเศษถูกผู้ดูแลปฏิเสธ
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 9: สลับธีม & ออกจากระบบ -->
+            <section id="topic-9" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">9</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">การสลับธีม และการออกจากระบบอย่างปลอดภัย</h3>
+                        <p class="text-xs text-slate-500">การใช้งานโหมดถนอมสายตา และกล่องยืนยันการออกจากระบบป้องกันการกดพลาด</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Theme Toggle Guide -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-2">
+                            <div class="font-bold text-slate-800 dark:text-white flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-moon text-indigo-500"></i>
+                                <span>โหมดถนอมสายตา (Dark Mode)</span>
+                            </div>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                กดปุ่ม <b>"โหมดถนอมสายตา"</b> ที่แถบเมนูด้านบน (หรือใน Drawer บนมือถือ) เพื่อเปลี่ยนโทนสีเป็นพื้นหลังมืด ช่วยลดแสงสะท้อนและถนอมสายตาขณะใช้งานในที่แสงน้อย โดยระบบจะบันทึกการตั้งค่าไว้ตลอดการใช้งาน
+                            </p>
+                        </div>
+
+                        <!-- Logout Guide -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 space-y-2">
+                            <div class="font-bold text-slate-800 dark:text-white flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-right-from-bracket text-rose-500"></i>
+                                <span>การออกจากระบบ (Logout)</span>
+                            </div>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                เมื่อเสร็จสิ้นการใช้งาน ให้กดปุ่ม <b>"ออกจากระบบ"</b> ระบบจะแสดงกล่องข้อความยืนยัน <i>"คุณต้องการออกจากระบบลงเวลาปฏิบัติราชการใช่หรือไม่?"</i> เพื่อป้องกันการกดพลาด เมื่อกดยืนยัน ระบบจะปิดกล้องและเคลียร์ Session ทันที
+                            </p>
+                            <button type="button" class="mockup-btn px-3 py-1.5 rounded-xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 cursor-pointer mt-1" data-title="จำลองการออกจากระบบ" data-desc="ในการใช้งานจริง ระบบจะแสดงป๊อปอัปยืนยัน เมื่อกดตกลงจะล้าง Session 7 วัน และนำท่านกลับสู่หน้าจอ index.html">
+                                <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i>ทดสอบปุ่มออกจากระบบ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic 10: คำถามที่พบบ่อย (FAQ) With Accordion -->
+            <section id="topic-10" class="page-break bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+                    <span class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00744B] flex items-center justify-center font-black text-lg shadow-xs shrink-0">10</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">คำถามที่พบบ่อย (FAQ) และการแก้ปัญหาเบื้องต้น</h3>
+                        <p class="text-xs text-slate-500">รวม 6 ปัญหาที่พบบ่อย พร้อมวิธีแก้ทีละขั้นตอน (คลิกเพื่อพับ/ขยายคำตอบ)</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3 text-xs sm:text-sm">
+
+                    <!-- FAQ Item 1 -->
+                    <div class="faq-item border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
+                        <button type="button" class="faq-trigger w-full px-5 py-4 text-left font-extrabold text-slate-900 dark:text-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-[#00744B]"></i>
+                                <span>Q1: กดปุ่ม "เปิดกล้องเพื่อถ่ายรูป" แล้วกล้องไม่เปิด หรือหน้าจอดำสนิท?</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down faq-chevron text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content px-5 pb-4 pt-1 text-slate-600 dark:text-slate-300 space-y-2 text-xs leading-relaxed border-t border-slate-200/60 dark:border-slate-700/60">
+                            <p><b>วิธีแก้ไขทีละขั้นตอน:</b></p>
+                            <ol class="list-decimal pl-5 space-y-1.5">
+                                <li><b>บน Brave (Android):</b> แตะ <b>ไอคอนปรับแต่ง/ขีดสองขีด (หรือแม่กุญแจ 🔒)</b> ที่แถบ URL ด้านบน &rarr; การตั้งค่าไซต์ / สิทธิ์ &rarr; กล้อง &rarr; เลือกเป็น <b>"อนุญาต / ตลอดไป"</b> พร้อมปิด <b>Brave Shields &gt; "Forget me when I close this site"</b> และตรวจสิทธิ์ระดับเครื่องที่ <i>การตั้งค่า &gt; แอป &gt; Brave &gt; สิทธิ์ &gt; กล้อง &gt; อนุญาตขณะใช้งานแอปเท่านั้น</i></li>
+                                <li><b>บน Google Chrome (คอมพิวเตอร์ / Android):</b> แตะ <b>ไอคอนปรับแต่ง/ขีดสองขีด (หรือแม่กุญแจ 🔒)</b> ที่แถบ URL ด้านบน &rarr; การตั้งค่าไซต์ / สิทธิ์ &rarr; สิทธิ์การเข้าถึงกล้อง &rarr; เลือกเป็น <b>"อนุญาตขณะเข้าชมเว็บไซต์"</b> หรือ <b>"อนุญาต" (Allow)</b> และบน Android ให้ตรวจ <i>การตั้งค่า &gt; แอป &gt; Chrome &gt; สิทธิ์ &gt; กล้อง &gt; อนุญาตขณะใช้งานแอปเท่านั้น</i></li>
+                                <li><b>บน Safari (iPhone / iPad):</b> แตะ <b>aA</b> หรือ <b>ไอคอนเมนูหน้าเว็บ [สี่เหลี่ยมมีขีด]</b> ที่แถบ URL &rarr; <i>การตั้งค่าเว็บไซต์</i> &rarr; <i>กล้อง</i> &rarr; เลือกเป็น <b>"อนุญาต" (Allow) เท่านั้น</b> และตรวจสอบใน <i>การตั้งค่า (Settings) ของ iOS &gt; แอป &gt; Safari &gt; กล้อง</i></li>
+                                <li><b>บน Google Chrome (iPhone / iPad):</b> ไปที่ <i>การตั้งค่า (Settings) &gt; แอป &gt; Chrome &gt; กล้อง = เปิด</i> และแตะไอคอนแถบ URL (<i>Page Info &gt; Permissions &gt; Camera</i>) เลือก <b>Always Allow</b> (หากปิดแอปแล้วยังถามซ้ำ แนะนำเปิดใช้งานด้วย <b>Safari</b> เพื่อจำสิทธิ์ถาวร)</li>
+                                <li>ปิดแอปพลิเคชันอื่นที่อาจแย่งการใช้งานกล้องอยู่ (เช่น LINE, Zoom, Google Meet)</li>
+                                <li>กดรีเฟรชหน้าเว็บ (กดปุ่ม F5 หรือรูดหน้าจอลงบนมือถือ) แล้วลองใหม่อีกครั้ง</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 2 -->
+                    <div class="faq-item border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
+                        <button type="button" class="faq-trigger w-full px-5 py-4 text-left font-extrabold text-slate-900 dark:text-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-[#0971CE]"></i>
+                                <span>Q2: ช่องสถานที่ขึ้นว่า "ไม่ได้เปิดการใช้งาน GPS" หรือค้นหาพิกัดไม่สำเร็จ?</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down faq-chevron text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content px-5 pb-4 pt-1 text-slate-600 dark:text-slate-300 space-y-2 text-xs leading-relaxed border-t border-slate-200/60 dark:border-slate-700/60">
+                            <p><b>วิธีแก้ไขทีละขั้นตอน:</b></p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li>เปิดบริการตำแหน่งที่ตั้ง (Location Services / GPS) ในการตั้งค่าหลักของสมาร์ตโฟน</li>
+                                <li>ตรวจดูว่าเบราว์เซอร์ได้รับอนุญาตเข้าถึงตำแหน่งหรือไม่ (คลิกรูปแม่กุญแจ 🔒 ที่แถบ URL &rarr; สิทธิ์ตำแหน่ง &rarr; อนุญาต)</li>
+                                <li>กดปุ่ม <b>"ตรวจสอบพิกัด GPS อีกครั้ง"</b> บนหน้าจอลงเวลา ระบบจะขอตำแหน่งดาวเทียมใหม่อีกครั้ง</li>
+                                <li>หากอยู่ในอาคารทึบ สัญญาณดาวเทียมอาจอ่อน แนะนำให้เปิด Wi-Fi เพื่อช่วยระบุตำแหน่งได้แม่นยำขึ้น</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 3 -->
+                    <div class="faq-item border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
+                        <button type="button" class="faq-trigger w-full px-5 py-4 text-left font-extrabold text-slate-900 dark:text-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-amber-500"></i>
+                                <span>Q3: กดปุ่มลงเวลาแล้วมีแจ้งเตือนสีแดง "กรุณาเลือกช่วงเวลาปฏิบัติงาน"?</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down faq-chevron text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content px-5 pb-4 pt-1 text-slate-600 dark:text-slate-300 space-y-2 text-xs leading-relaxed border-t border-slate-200/60 dark:border-slate-700/60">
+                            <p><b>สาเหตุและวิธีปฏิบัติ:</b></p>
+                            <p>
+                                ระบบตั้งค่าเริ่มต้นของ Dropdown เป็นค่าว่างเพื่อป้องกันการลงเวลาผิดกะ ให้ท่านคลิกที่ช่อง <b>"เลือกช่วงเวลาทำงาน"</b> แล้วเลือกช่วงเวลาของท่าน (เช่น เวลาราชการปกติ 08:30 - 16:30 น.) จากนั้นจึงกดปุ่มบันทึกลงเวลาอีกครั้ง
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 4 -->
+                    <div class="faq-item border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
+                        <button type="button" class="faq-trigger w-full px-5 py-4 text-left font-extrabold text-slate-900 dark:text-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-purple-500"></i>
+                                <span>Q4: ลืมลงเวลาเลิกงานเมื่อวาน วันนี้ต้องแก้ไขอย่างไร?</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down faq-chevron text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content px-5 pb-4 pt-1 text-slate-600 dark:text-slate-300 space-y-2 text-xs leading-relaxed border-t border-slate-200/60 dark:border-slate-700/60">
+                            <p><b>แนวทางแก้ไข:</b></p>
+                            <p>
+                                ในวันปัจจุบัน ให้ท่านบันทึกเวลาเข้างานตามปกติ ส่วนรายการของเมื่อวานที่ขาดเวลาเลิกงาน ให้ท่านเปิดแท็บที่ 3 <b>"ขอลงเวลากรณีพิเศษ"</b> เลือกวันที่เมื่อวาน ระบุกะเวลา และระบุเหตุผลว่า <i>"ลืมลงเวลาเลิกงานเนื่องจาก..."</i> เพื่อให้ผู้ดูแลระบบตรวจสอบและอนุมัติบันทึกเวลาให้
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 5 -->
+                    <div class="faq-item border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
+                        <button type="button" class="faq-trigger w-full px-5 py-4 text-left font-extrabold text-slate-900 dark:text-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-rose-500"></i>
+                                <span>Q5: สัญญาณอินเทอร์เน็ตหลุดหรือช้าขณะกดบันทึกเวลา จะทราบได้อย่างไรว่าบันทึกสำเร็จ?</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down faq-chevron text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content px-5 pb-4 pt-1 text-slate-600 dark:text-slate-300 space-y-2 text-xs leading-relaxed border-t border-slate-200/60 dark:border-slate-700/60">
+                            <p><b>วิธีตรวจสอบ:</b></p>
+                            <p>
+                                ให้สังเกตที่การ์ด <b>"เวลาเข้างาน"</b> หรือ <b>"เวลาออกงาน"</b> ด้านบน หากบันทึกสำเร็จ การ์ดจะแสดงเวลาเป็นตัวเลขสีเขียวและมีป้ายสถานะปรากฏ หากยังขึ้นว่า "ยังไม่ได้ลงเวลา" ให้กดรีเฟรช 1 ครั้งและตรวจสอบในแท็บ <b>"ประวัติส่วนตัว &rarr; วันปัจจุบัน"</b> หากไม่มีข้อมูล จึงค่อยกดบันทึกใหม่อีกครั้ง
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 6 -->
+                    <div class="faq-item border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
+                        <button type="button" class="faq-trigger w-full px-5 py-4 text-left font-extrabold text-slate-900 dark:text-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-[#00744B]"></i>
+                                <span>Q6: รหัสผ่านผิด หรือไม่สามารถเข้าสู่ระบบได้ ต้องทำอย่างไร?</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down faq-chevron text-slate-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content px-5 pb-4 pt-1 text-slate-600 dark:text-slate-300 space-y-2 text-xs leading-relaxed border-t border-slate-200/60 dark:border-slate-700/60">
+                            <p><b>วิธีแก้ไข:</b></p>
+                            <p>
+                                ให้กดที่ปุ่ม <b>"ลืมรหัสผ่าน"</b> ที่หน้าเข้าสู่ระบบ กรอกเลขประจำตัวประชาชน 13 หลักของท่าน แล้วกดส่งคำขอ เมื่อผู้ดูแลระบบตรวจสอบและอนุมัติ รหัสผ่านของท่านจะถูกตั้งค่าเป็น <b>"เลข 6 หลักท้ายบัตรประชาชน"</b> ท่านสามารถใช้รหัสดังกล่าวล็อกอินและเปลี่ยนรหัสผ่านใหม่ได้ทันที
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button type="button" id="btnBackToTop" class="no-print fixed bottom-6 right-6 w-11 h-11 rounded-full bg-[#00744B] text-white shadow-xl flex items-center justify-center text-sm opacity-0 pointer-events-none transition-all duration-300 hover:bg-[#005B3A] cursor-pointer z-30" title="กลับขึ้นด้านบน">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- Global Mockup Interactive Modal -->
+    <div id="mockupModal" class="no-print fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div id="mockupModalBackdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity opacity-0 cursor-pointer"></div>
+        <div id="mockupModalPanel" class="relative bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 transform scale-95 opacity-0 transition-all duration-200 space-y-4">
+            <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-[#00744B] dark:text-emerald-400 flex items-center justify-center text-lg font-bold shrink-0">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400 block">ตัวอย่างหน้าจอจำลอง (Mockup)</span>
+                        <h4 id="mockupModalTitle" class="text-base font-black text-slate-900 dark:text-white leading-tight">การทำงานของปุ่ม</h4>
+                    </div>
+                </div>
+                <button type="button" id="btnCloseMockupModal" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/70 dark:border-slate-700/60 text-xs text-slate-600 dark:text-slate-300 leading-relaxed" id="mockupModalDesc">
+                คำอธิบายฟังก์ชันการทำงานจริง
+            </div>
+            <div class="flex justify-end pt-2">
+                <button type="button" id="btnConfirmMockupModal" class="px-5 py-2.5 rounded-xl bg-[#00744B] text-white font-bold text-xs hover:bg-[#005B3A] transition shadow-md cursor-pointer">
+                    เข้าใจแล้ว
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 px-4 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
+        <div class="flex items-center justify-center gap-2 font-bold text-slate-700 dark:text-slate-300">
+            <i class="fa-solid fa-landmark text-[#00744B]"></i>
+            <span>ระบบลงเวลาปฏิบัติราชการออนไลน์ กรุงเทพมหานคร</span>
+        </div>
+        <p>คู่มือการใช้งานสำหรับผู้ใช้งานทั่วไป (User Manual) • ฉบับ 19 พฤศจิกายน 2569 (V2.11.0)</p>
+    </footer>
+
+    <!-- Interactive Scripts: Theme, Mobile TOC, Scrollspy, Back to Top, FAQ Accordion, Mockup Alerts -->
+    <script>
+        // 1. Theme Logic
+        const themeBtn = document.getElementById('btnToggleTheme');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeLabel = document.getElementById('themeLabel');
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-400';
+                if (themeLabel) themeLabel.textContent = 'โหมดปกติ';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-slate-600';
+                if (themeLabel) themeLabel.textContent = 'โหมดถนอมสายตา';
+            }
+        }
+
+        const savedTheme = localStorage.getItem('bma_manual_theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
+
+        themeBtn?.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(!isDark);
+            localStorage.setItem('bma_manual_theme', !isDark ? 'dark' : 'light');
+        });
+
+        // 2. Mobile TOC Drawer
+        const btnToggleMobileToc = document.getElementById('btnToggleMobileToc');
+        const btnCloseMobileToc = document.getElementById('btnCloseMobileToc');
+        const mobileTocDrawer = document.getElementById('mobileTocDrawer');
+        const mobileTocBackdrop = document.getElementById('mobileTocBackdrop');
+        const mobileTocPanel = document.getElementById('mobileTocPanel');
+        const mobileTocNav = document.getElementById('mobileTocNav');
+        const desktopTocNav = document.getElementById('desktopTocNav');
+
+        if (mobileTocNav && desktopTocNav) {
+            mobileTocNav.innerHTML = desktopTocNav.innerHTML;
+        }
+
+        function openMobileToc() {
+            mobileTocDrawer?.classList.remove('hidden');
+            setTimeout(() => {
+                mobileTocBackdrop?.classList.remove('opacity-0');
+                mobileTocBackdrop?.classList.add('opacity-100');
+                mobileTocPanel?.classList.remove('translate-x-full');
+                mobileTocPanel?.classList.add('translate-x-0');
+            }, 10);
+        }
+
+        function closeMobileToc() {
+            mobileTocBackdrop?.classList.remove('opacity-100');
+            mobileTocBackdrop?.classList.add('opacity-0');
+            mobileTocPanel?.classList.remove('translate-x-0');
+            mobileTocPanel?.classList.add('translate-x-full');
+            setTimeout(() => {
+                mobileTocDrawer?.classList.add('hidden');
+            }, 300);
+        }
+
+        btnToggleMobileToc?.addEventListener('click', openMobileToc);
+        btnCloseMobileToc?.addEventListener('click', closeMobileToc);
+        mobileTocBackdrop?.addEventListener('click', closeMobileToc);
+
+        mobileTocNav?.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', closeMobileToc);
+        });
+
+        // 3. Scrollspy & Back to Top
+        const backToTopBtn = document.getElementById('btnBackToTop');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const sections = document.querySelectorAll('section[id^="topic-"]');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn?.classList.remove('opacity-0', 'pointer-events-none');
+                backToTopBtn?.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                backToTopBtn?.classList.remove('opacity-100', 'pointer-events-auto');
+                backToTopBtn?.classList.add('opacity-0', 'pointer-events-none');
+            }
+
+            let currentId = '';
+            sections.forEach(sec => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top <= 140 && rect.bottom >= 140) {
+                    currentId = sec.getAttribute('id');
+                }
+            });
+
+            if (currentId) {
+                tocLinks.forEach(link => {
+                    if (link.getAttribute('href') === `#${currentId}`) {
+                        link.classList.add('bg-emerald-50', 'dark:bg-slate-700', 'text-[#00744B]', 'dark:text-emerald-400', 'font-black', 'border-l-4', 'border-[#00744B]');
+                    } else {
+                        link.classList.remove('bg-emerald-50', 'dark:bg-slate-700', 'text-[#00744B]', 'dark:text-emerald-400', 'font-black', 'border-l-4', 'border-[#00744B]');
+                    }
+                });
+            }
+        });
+
+        backToTopBtn?.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 4. Password Toggle in Mockup
+        const btnToggleMockPassword = document.getElementById('btnToggleMockPassword');
+        const mockPasswordInput = document.getElementById('mockPasswordInput');
+        const mockEyeIcon = document.getElementById('mockEyeIcon');
+
+        btnToggleMockPassword?.addEventListener('click', () => {
+            if (mockPasswordInput.type === 'password') {
+                mockPasswordInput.type = 'text';
+                mockEyeIcon.className = 'fa-solid fa-eye-slash text-emerald-600';
+            } else {
+                mockPasswordInput.type = 'password';
+                mockEyeIcon.className = 'fa-solid fa-eye text-slate-400';
+            }
+        });
+
+        // 5. FAQ Accordion Logic
+        const faqTriggers = document.querySelectorAll('.faq-trigger');
+        faqTriggers.forEach((btn, index) => {
+            const content = btn.nextElementSibling;
+            const chevron = btn.querySelector('.faq-chevron');
+
+            // Open the first FAQ item by default, collapse others
+            if (index !== 0) {
+                content.style.display = 'none';
+            } else {
+                chevron?.classList.add('rotate-180');
+            }
+
+            btn.addEventListener('click', () => {
+                const isHidden = content.style.display === 'none';
+                if (isHidden) {
+                    content.style.display = 'block';
+                    chevron?.classList.add('rotate-180');
+                } else {
+                    content.style.display = 'none';
+                    chevron?.classList.remove('rotate-180');
+                }
+            });
+        });
+
+        // 6. Global Mockup Alert Modal
+        const mockupModal = document.getElementById('mockupModal');
+        const mockupModalBackdrop = document.getElementById('mockupModalBackdrop');
+        const mockupModalPanel = document.getElementById('mockupModalPanel');
+        const mockupModalTitle = document.getElementById('mockupModalTitle');
+        const mockupModalDesc = document.getElementById('mockupModalDesc');
+        const btnCloseMockupModal = document.getElementById('btnCloseMockupModal');
+        const btnConfirmMockupModal = document.getElementById('btnConfirmMockupModal');
+
+        function openMockupModal(title, desc) {
+            if (!mockupModal) return;
+            mockupModalTitle.textContent = title || 'ตัวอย่างหน้าจอจำลอง';
+            mockupModalDesc.innerHTML = `<span class="font-bold text-[#00744B] dark:text-emerald-400 block mb-1">💡 ในการใช้งานจริง:</span>${desc || 'ปุ่มนี้ทำหน้าที่ตามกระบวนการของระบบ'}`;
+            mockupModal.classList.remove('hidden');
+            setTimeout(() => {
+                mockupModalBackdrop?.classList.remove('opacity-0');
+                mockupModalBackdrop?.classList.add('opacity-100');
+                mockupModalPanel?.classList.remove('scale-95', 'opacity-0');
+                mockupModalPanel?.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeMockupModal() {
+            mockupModalBackdrop?.classList.remove('opacity-100');
+            mockupModalBackdrop?.classList.add('opacity-0');
+            mockupModalPanel?.classList.remove('scale-100', 'opacity-100');
+            mockupModalPanel?.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                mockupModal.classList.add('hidden');
+            }, 200);
+        }
+
+        btnCloseMockupModal?.addEventListener('click', closeMockupModal);
+        btnConfirmMockupModal?.addEventListener('click', closeMockupModal);
+        mockupModalBackdrop?.addEventListener('click', closeMockupModal);
+
+        document.querySelectorAll('.mockup-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const title = btn.getAttribute('data-title');
+                const desc = btn.getAttribute('data-desc');
+                openMockupModal(title, desc);
+            });
+        });
+    </script>
+</body>
+</html>

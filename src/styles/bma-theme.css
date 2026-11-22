@@ -1,0 +1,1755 @@
+/* ============================================================================
+ * BMA Enterprise Design System V2.5 (Vite + React + Tailwind CSS v4)
+ * Theme: BMA Graphic Emerald Gradient, Rich Green Header/Footer & Row Profile
+ * Font: Sarabun (loaded via index.html Google Fonts <link>)
+ * ============================================================================ */
+
+:root {
+    color-scheme: light;
+
+    /* --- BMA 9-Color Civic Design System (Image 2) --- */
+    --bma-c-primary: #00744B;      /* Primary BMA Green */
+    --bma-c-sec-1: #215A41;        /* 1. Dark Forest Green */
+    --bma-c-sec-2: #66A33A;        /* 2. Leaf Olive Green */
+    --bma-c-sec-3: #00C08A;        /* 3. Mint Teal */
+    --bma-c-sec-4: #FFB449;        /* 4. Warm Amber */
+    --bma-c-sec-5: #F6DE51;        /* 5. Golden Sunglow */
+    --bma-c-sec-6: #0971CE;        /* 6. Royal Sapphire Blue */
+    --bma-c-sec-7: #EB3DA9;        /* 7. Berry Magenta */
+    --bma-c-sec-8: #480080;        /* 8. Deep Imperial Purple */
+
+    /* Core BMA Emerald & Gold Tokens */
+    --g0: #072314;
+    --g1: #00744B;
+    --g2: #00C08A;
+    --gold-bma: #F6DE51;
+
+    /* Primary Brand & Button Tokens */
+    --bma-primary: #00744B;
+    --bma-primary-hover: #005B2E;
+    --bma-primary-light: #00C08A;
+    --bma-primary-soft: rgba(0, 116, 75, 0.12);
+
+    /* Official 5 Status Colors */
+    --status-normal: #00744B;
+    --status-late: #FFB449;
+    --status-absent-duty: #EB3DA9;
+    --status-no-checkin: #E11D48;
+    --status-overtime: #0971CE;
+
+    /* Clean Surfaces & Typography Tokens */
+    --bma-canvas: #E7ECE9;
+    --bma-surface-1: #FFFFFF;
+    --bma-surface-2: #F8FAFC;
+    --bma-surface-info: #EBF8F2;
+    --bma-border: #E2E8F0;
+    --bma-text-primary: #1E293B;
+    --bma-text-secondary: #475569;
+    --bma-text-muted: #94A3B8;
+
+    /* Table Header Tokens */
+    --bma-thead-bg: #F1F5F9;
+    --bma-thead-text: #0F172A;
+    --bma-thead-border: #E2E8F0;
+
+    /* Status Badges */
+    --badge-success-bg: rgba(0, 192, 138, 0.15);
+    --badge-success-text: #00744B;
+    --badge-warning-bg: rgba(255, 180, 73, 0.18);
+    --badge-warning-text: #B45309;
+    --badge-danger-bg: rgba(235, 61, 169, 0.15);
+    --badge-danger-text: #BE123C;
+    --badge-indigo-bg: rgba(9, 113, 206, 0.15);
+    --badge-indigo-text: #0971CE;
+    --badge-sky-bg: rgba(2, 132, 199, 0.15);
+    --badge-sky-text: #0284C7;
+
+    --shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================================================
+ * Dark Mode (Eye-Care Dark System)
+ * ============================================================================ */
+html.dark {
+    color-scheme: dark;
+
+    --bma-primary: #34D399;
+    --bma-primary-hover: #10B981;
+    --bma-primary-light: #A7F3D0;
+    --bma-primary-soft: rgba(52, 211, 153, 0.16);
+
+    --sb1: #03190E;
+    --sb2: #062D19;
+    --sb3: #0A4526;
+
+    --bma-surface-1: #11231B;
+    --bma-surface-2: #183025;
+    --bma-surface-info: rgba(6, 78, 59, 0.4);
+    --bma-border: #244737;
+    --bma-text-primary: #F1F5F9;
+    --bma-text-secondary: #A7F3D0;
+    --bma-text-muted: #759987;
+
+    --bma-thead-bg: #163024;
+    --bma-thead-text: #A7F3D0;
+    --bma-thead-border: #254D3A;
+
+    --badge-success-bg: rgba(74, 222, 128, 0.18);
+    --badge-success-text: #4ADE80;
+    --badge-warning-bg: rgba(252, 211, 77, 0.18);
+    --badge-warning-text: #FCD34D;
+    --badge-danger-bg: rgba(248, 113, 113, 0.18);
+    --badge-danger-text: #F87171;
+    --badge-indigo-bg: rgba(96, 165, 250, 0.18);
+    --badge-indigo-text: #60A5FA;
+    --badge-sky-bg: rgba(56, 189, 248, 0.18);
+    --badge-sky-text: #38BDF8;
+
+    --shadow-card: 0 12px 30px -4px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================================
+ * พื้นหลังลายกราฟิกโทนสีเขียวไล่สี สวยงาม ไม่เด่นเกินหน้าต่าง Login หรือโมดูลทำงาน
+ * ============================================================================ */
+@layer base {
+    * {
+        font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--bma-canvas, #E7ECE9);
+        color: var(--bma-text-primary, #1E293B);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        transition: background 0.25s ease, color 0.25s ease;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    html.dark body {
+        background-color: #0F172A;
+        color: #F1F5F9;
+    }
+}
+
+/* ============================================================================
+ * BMA Civic 9-Color Vertical Gradient (Login Page) - เรียบหรู 180deg ไร้ลวดลาย
+ * ============================================================================ */
+body.login-vertical-gradient,
+.login-vertical-gradient {
+    background: 
+        radial-gradient(ellipse 70% 50% at 85% 10%, rgba(9, 113, 206, 0.32) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 12% 88%, rgba(235, 61, 169, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 82%, rgba(255, 180, 73, 0.28) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 15% 18%, rgba(72, 0, 128, 0.35) 0%, transparent 65%),
+        linear-gradient(180deg, #132E22 0%, #215A41 18%, #00744B 42%, #00995D 65%, #00C08A 84%, #66A33A 100%) !important;
+    background-color: #00744B !important;
+    min-height: 100vh !important;
+}
+
+html.dark body.login-vertical-gradient,
+html.dark .login-vertical-gradient {
+    background: 
+        radial-gradient(ellipse 70% 50% at 85% 10%, rgba(9, 113, 206, 0.22) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 12% 88%, rgba(235, 61, 169, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 82%, rgba(255, 180, 73, 0.20) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 15% 18%, rgba(72, 0, 128, 0.28) 0%, transparent 65%),
+        linear-gradient(180deg, #071911 0%, #122B20 20%, #004D32 45%, #00744B 75%, #00C08A 100%) !important;
+    background-color: #071911 !important;
+    min-height: 100vh !important;
+}
+
+/* ============================================================================
+ * BMA Civic Ambient Canvas (Check-in Page) - เกลี่ยสี 9 สีสบายตา คมชัดระดับพรีเมียม
+ * ============================================================================ */
+body.checkin-civic-gradient,
+.checkin-civic-gradient {
+    background: 
+        radial-gradient(ellipse 70% 50% at 90% 8%, rgba(9, 113, 206, 0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 8% 85%, rgba(235, 61, 169, 0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 75%, rgba(255, 180, 73, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 15% 20%, rgba(72, 0, 128, 0.12) 0%, transparent 60%),
+        linear-gradient(180deg, #CDE5D8 0%, #DCECE3 22%, #E2EDF2 50%, #ECE6F3 75%, #DEEBE2 100%) !important;
+    background-color: #CDE5D8 !important;
+    min-height: 100vh !important;
+}
+
+html.dark body.checkin-civic-gradient,
+html.dark .checkin-civic-gradient {
+    background: 
+        radial-gradient(ellipse 70% 50% at 90% 8%, rgba(9, 113, 206, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 8% 85%, rgba(235, 61, 169, 0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 75%, rgba(255, 180, 73, 0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 15% 20%, rgba(72, 0, 128, 0.20) 0%, transparent 60%),
+        linear-gradient(180deg, #071911 0%, #0D261B 22%, #0F212D 50%, #15162D 78%, #0B1120 100%) !important;
+    background-color: #071911 !important;
+    min-height: 100vh !important;
+}
+
+/* ============================================================================
+ * แถบ Header และแถบ Footer สีเขียว กทม. สวยงาม ตัวอักษรสีขาว/ทอง อ่านง่ายชัดเจน
+ * ============================================================================ */
+.bma-header-bar {
+    background-color: #004D26 !important;
+    background-image: linear-gradient(90deg, #00351B 0%, #005B2E 52%, #007B3E 100%) !important;
+    color: #FFFFFF !important;
+    border-bottom: 3px solid #FDD835 !important;
+    box-shadow: 0 4px 20px rgba(0, 53, 27, 0.22);
+}
+
+.bma-header-bar h1,
+.bma-header-bar .header-title-text {
+    color: #FFFFFF !important;
+}
+
+.bma-header-bar p,
+.bma-header-bar .header-sub-text {
+    color: #D1FAE5 !important;
+}
+
+/* แถบ Topbar สำหรับหน้าผู้ดูแลระบบที่มี Sidebar ด้านซ้าย */
+.bma-admin-topbar {
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--bma-border);
+    border-top: 4px solid var(--g1);
+}
+html.dark .bma-admin-topbar {
+    background-color: rgba(17, 35, 27, 0.92);
+}
+
+/* Modern Civic Muted Sage Admin Footer (สไตล์โมเดิร์น เรียบหรู สะอาดตา) */
+.bma-footer-bar {
+    background: rgba(255, 255, 255, 0.75) !important;
+    background-image: none !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    color: #475569 !important;
+    border-top: 1px solid rgba(203, 213, 225, 0.8) !important;
+    box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+html.dark .bma-footer-bar {
+    background: rgba(11, 19, 43, 0.85) !important;
+    background-image: none !important;
+    color: #94A3B8 !important;
+    border-top: 1px solid rgba(30, 41, 59, 0.8) !important;
+    box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.bma-footer-bar span,
+.bma-footer-bar div {
+    color: #475569 !important;
+}
+
+html.dark .bma-footer-bar span,
+html.dark .bma-footer-bar div {
+    color: #94A3B8 !important;
+}
+
+.bma-footer-bar .footer-highlight {
+    color: #00744B !important;
+    font-weight: 700 !important;
+}
+
+html.dark .bma-footer-bar .footer-highlight {
+    color: #00C08A !important;
+}
+
+.bma-footer-bar .footer-desc-line {
+    color: #64748B !important;
+    font-size: 0.725rem !important;
+}
+
+html.dark .bma-footer-bar .footer-desc-line {
+    color: #64748B !important;
+}
+
+/* ============================================================================
+ * ปุ่มบนแถบ Header สีเขียว กทม. (ปุ่มเปลี่ยนโหมดธีม, ปุ่มระบบผู้ดูแล, ปุ่มออกจากระบบ)
+ * ============================================================================ */
+.btn-header-theme {
+    background: linear-gradient(135deg, #FDD835 0%, #F59E0B 100%) !important;
+    color: #00351B !important;
+    font-weight: 800 !important;
+    border: 2px solid #FFFFFF !important;
+    border-radius: 0.75rem;
+    padding: 0.45rem 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-header-theme:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(253, 216, 53, 0.45);
+    filter: brightness(1.05);
+}
+
+.btn-header-admin {
+    background: #FFFFFF !important;
+    color: #004D26 !important;
+    font-weight: 800 !important;
+    border: 2px solid #A7F3D0 !important;
+    border-radius: 0.75rem;
+    padding: 0.45rem 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-header-admin:hover {
+    background: #ECFDF5 !important;
+    border-color: #FDD835 !important;
+    transform: translateY(-1px);
+}
+
+.btn-header-logout {
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border: 2px solid rgba(255, 255, 255, 0.75) !important;
+    border-radius: 0.75rem;
+    padding: 0.45rem 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    box-shadow: 0 4px 12px rgba(190, 18, 60, 0.35);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-header-logout:hover {
+    background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
+}
+
+/* ============================================================================
+ * การ์ดและพื้นผิวหลัก
+ * ============================================================================ */
+.bma-card {
+    background-color: var(--bma-surface-1) !important;
+    border: 1px solid var(--bma-border);
+    box-shadow: var(--shadow-card);
+    border-radius: 1rem;
+    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.bma-login-form-panel,
+.bma-surface-panel {
+    background-color: var(--bma-surface-1) !important;
+    color: var(--bma-text-primary) !important;
+}
+
+.bma-modal-surface {
+    background-color: var(--bma-surface-1) !important;
+    border: 1px solid var(--bma-border);
+}
+
+html.dark .bma-modal-surface {
+    background-color: var(--bma-surface-2) !important;
+}
+
+.bma-info-box {
+    background-color: var(--bma-surface-info);
+    border: 1px solid var(--bma-border);
+    border-radius: 0.75rem;
+}
+
+.bma-border {
+    border-color: var(--bma-border);
+}
+
+.bma-text-main {
+    color: var(--bma-text-primary);
+}
+
+.bma-text-sub {
+    color: var(--bma-text-secondary);
+}
+
+.bma-text-muted {
+    color: var(--bma-text-muted);
+}
+
+/* ============================================================================
+ * แผง Brand Panel หน้า Login & กรอบกล้องแนวตั้ง 3:4
+ * ============================================================================ */
+.bma-brand-panel {
+    background-color: #004D26 !important;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(150deg, var(--sb1) 0%, var(--sb2) 52%, var(--sb3) 100%) !important;
+    background-size: 28px 28px, 28px 28px, 100% 100% !important;
+    position: relative;
+    overflow: hidden;
+    color: #FFFFFF !important;
+}
+
+.bma-mobile-login-header {
+    background-color: #004D26 !important;
+    background-image: linear-gradient(135deg, var(--sb1) 0%, var(--sb2) 60%, var(--sb3) 100%) !important;
+    color: #FFFFFF !important;
+    border-bottom: 3px solid var(--gold-bma);
+}
+
+.camera-portrait-3-4 {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.outdoor-emerald-frame {
+    background-color: #004D26 !important;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(135deg, var(--sb1) 0%, var(--sb2) 100%) !important;
+    background-size: 24px 24px, 24px 24px, 100% 100% !important;
+    border: 2px solid var(--g1);
+    box-shadow: 0 10px 25px -5px rgba(0, 53, 27, 0.25);
+    color: #FFFFFF !important;
+    border-radius: 1.15rem;
+}
+
+.outdoor-camera-bezel {
+    border: 3px solid var(--g1);
+    box-shadow: inset 0 0 0 2px var(--gold-bma), 0 10px 24px -4px rgba(0, 53, 27, 0.25);
+    border-radius: 1.1rem;
+    overflow: hidden;
+    background-color: #07170E;
+}
+
+@media (min-width: 1024px) {
+    #checkinWorkspaceGrid {
+        grid-template-columns: 4fr 6fr !important;
+    }
+    #checkinWorkspaceGrid:has(#cameraSectionCard.hidden) {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================================================
+ * Toast Notification Popup
+ * ============================================================================ */
+#bmaToastWrapper {
+    position: fixed;
+    z-index: 100000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 24rem;
+}
+
+@media (min-width: 768px) {
+    #bmaToastWrapper {
+        top: 1.25rem;
+        right: 1.25rem;
+        left: auto;
+        transform: none;
+        width: auto;
+        min-width: 20rem;
+        max-width: 26rem;
+    }
+}
+
+.bma-toast-item {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.15rem;
+    border-radius: 0.9rem;
+    background: linear-gradient(135deg, #00351B 0%, #006834 100%);
+    color: #FFFFFF;
+    border-left: 5px solid #FDD835;
+    box-shadow: 0 14px 28px -6px rgba(0, 35, 18, 0.45);
+    font-size: 0.92rem;
+    font-weight: 700;
+    animation: bmaToastSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.bma-toast-item.toast-error {
+    background: linear-gradient(135deg, #881337 0%, #E11D48 100%);
+    border-left-color: #FDA4AF;
+}
+
+.bma-toast-item.toast-warning {
+    background: linear-gradient(135deg, #78350F 0%, #D97706 100%);
+    border-left-color: #FDE047;
+}
+
+.bma-toast-item.toast-fade-out {
+    animation: bmaToastFadeOut 0.25s ease forwards;
+}
+
+@keyframes bmaToastSlideIn {
+    from { opacity: 0; transform: translateY(-14px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bmaToastFadeOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-10px) scale(0.96); }
+}
+
+/* ============================================================================
+ * Status Tag Filter Chips & Pastel Role Badges
+ * ============================================================================ */
+.status-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 2px solid var(--bma-border);
+    background-color: var(--bma-surface-1);
+    color: var(--bma-text-secondary);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.18s ease;
+}
+
+.status-tag-chip:hover {
+    transform: translateY(-1px);
+}
+
+.status-tag-chip.active {
+    color: #FFFFFF !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+.role-pastel-superadmin {
+    background-color: #FFE4E6 !important;
+    color: #BE123C !important;
+    border: 1px solid #FDA4AF !important;
+}
+html.dark .role-pastel-superadmin {
+    background-color: rgba(244, 63, 94, 0.22) !important;
+    color: #FDA4AF !important;
+    border-color: rgba(253, 164, 175, 0.4) !important;
+}
+
+.role-pastel-admin {
+    background-color: #FEF9C3 !important;
+    color: #A16207 !important;
+    border: 1px solid #FDE047 !important;
+}
+html.dark .role-pastel-admin {
+    background-color: rgba(234, 179, 8, 0.22) !important;
+    color: #FDE047 !important;
+    border-color: rgba(253, 224, 71, 0.4) !important;
+}
+
+.role-pastel-user {
+    background-color: #DCFCE7 !important;
+    color: #15803D !important;
+    border: 1px solid #86EFAC !important;
+}
+html.dark .role-pastel-user {
+    background-color: rgba(34, 197, 94, 0.22) !important;
+    color: #86EFAC !important;
+    border-color: rgba(134, 239, 172, 0.4) !important;
+}
+
+.role-dot-superadmin {
+    background-color: #FB7185 !important;
+    box-shadow: 0 0 0 3px #FFE4E6;
+}
+.role-dot-admin {
+    background-color: #FACC15 !important;
+    box-shadow: 0 0 0 3px #FEF9C3;
+}
+.role-dot-user {
+    background-color: #4ADE80 !important;
+    box-shadow: 0 0 0 3px #DCFCE7;
+}
+
+.bma-badge-pastel-purple {
+    background-color: #F3E8FF !important;
+    color: #6B21A8 !important;
+    border: 1px solid #D8B4FE !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+html.dark .bma-badge-pastel-purple {
+    background-color: rgba(168, 85, 247, 0.22) !important;
+    color: #E9D5FF !important;
+    border-color: rgba(216, 180, 254, 0.4) !important;
+}
+
+/* ============================================================================
+ * Deep Emerald Sidebar (.sidebar-dark-bma) & Menu Items
+ * ============================================================================ */
+.sidebar-dark-bma {
+    background: linear-gradient(180deg, var(--sb1) 0%, var(--sb2) 55%, var(--sb3) 100%);
+    color: #FFFFFF;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 4px 0 24px rgba(0, 53, 27, 0.18);
+}
+
+.sidebar-dark-bma .bma-nav-item,
+.sidebar-dark-bma .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    color: rgba(255, 255, 255, 0.78);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    margin-bottom: 0.3rem;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+}
+
+.sidebar-dark-bma .bma-nav-item:hover,
+.sidebar-dark-bma .menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    transform: translateX(2px);
+}
+
+.sidebar-dark-bma .bma-nav-item.active,
+.sidebar-dark-bma .menu-item.active {
+    background: linear-gradient(90deg, rgba(253, 216, 53, 0.22) 0%, rgba(255, 255, 255, 0.12) 100%);
+    color: #FFFFFF;
+    font-weight: 700;
+    border-left: 4px solid var(--gold-bma);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-dark-bma .bma-nav-item.active i,
+.sidebar-dark-bma .menu-item.active i {
+    color: var(--gold-bma);
+}
+
+/* ============================================================================
+ * Jewel-Tone Stat Cards
+ * ============================================================================ */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.15rem;
+    padding: 1.35rem 1.5rem;
+    color: #FFFFFF !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 53, 27, 0.22), 0 4px 10px -2px rgba(0, 0, 0, 0.08);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    z-index: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -6px rgba(0, 53, 27, 0.28);
+}
+
+.stat-card-total {
+    background-color: #00351B !important;
+    background-image: linear-gradient(135deg, #00351B 0%, #005B2E 52%, #007B3E 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(253, 216, 53, 0.35) !important;
+}
+
+.stat-card .deco,
+.stat-card .deco-1,
+.stat-card .deco-2 {
+    position: absolute;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.04) 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.stat-card .deco-1 {
+    width: 7.5rem;
+    height: 7.5rem;
+    top: -2.2rem;
+    right: -2.2rem;
+}
+
+.stat-card .deco-2 {
+    width: 5.5rem;
+    height: 5.5rem;
+    bottom: -1.8rem;
+    right: 2.2rem;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 70%);
+}
+
+.stat-card .stat-content {
+    position: relative;
+    z-index: 2;
+}
+
+.stat-card .stat-icon-box {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.stat-card .stat-progress-track {
+    width: 100%;
+    height: 0.45rem;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    margin-top: 0.4rem;
+}
+
+.stat-card .stat-progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: #FFFFFF;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    transition: width 0.5s ease;
+}
+
+/* ============================================================================
+ * International Resume Profile Modal Styles (รูปถ่ายขนาดใหญ่ + Google Map เฉพาะ Row)
+ * ============================================================================ */
+.resume-header-banner {
+    background-color: #00351B !important;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(135deg, #00351B 0%, #005B2E 50%, #007B3E 100%) !important;
+    background-size: 24px 24px, 24px 24px, 100% 100% !important;
+    color: #FFFFFF !important;
+    border-bottom: 4px solid #FDD835;
+}
+
+.resume-section-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bma-primary);
+    border-bottom: 2px solid var(--bma-border);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.resume-timeline-node {
+    position: relative;
+    padding-left: 1.35rem;
+    border-left: 2px solid var(--bma-primary);
+    padding-bottom: 0.75rem;
+}
+
+.resume-timeline-node::before {
+    content: '';
+    position: absolute;
+    left: -0.42rem;
+    top: 0.2rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 9999px;
+    background-color: var(--bma-primary);
+    border: 2px solid var(--bma-surface-1);
+}
+
+.resume-large-photo-frame {
+    width: 100%;
+    max-width: 240px;
+    aspect-ratio: 3 / 4;
+    border-radius: 1rem;
+    border: 3px solid var(--g1);
+    box-shadow: 0 10px 24px -4px rgba(0, 53, 27, 0.22);
+    overflow: hidden;
+    background-color: #0B1912;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================================================
+ * Buttons & Form Controls
+ * ============================================================================ */
+.btn-primary,
+.btn-bma-primary {
+    background: linear-gradient(135deg, var(--hd1) 0%, var(--hd2) 55%, var(--hd3) 100%);
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: 0.625rem 1.25rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 123, 62, 0.25);
+    cursor: pointer;
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-bma-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--sb2) 0%, var(--hd1) 60%, var(--hd2) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 123, 62, 0.35);
+}
+
+.btn-primary:disabled,
+.btn-bma-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-bma-soft {
+    background-color: var(--bma-primary-soft);
+    color: var(--bma-primary);
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(0, 123, 62, 0.25);
+    cursor: pointer;
+}
+
+.btn-bma-soft:hover:not(:disabled) {
+    border-color: var(--bma-primary);
+    background-color: rgba(0, 123, 62, 0.22);
+}
+
+.btn-bma-outline {
+    background-color: var(--bma-surface-1);
+    color: var(--bma-text-primary);
+    border: 1px solid var(--bma-border);
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.btn-bma-outline:hover:not(:disabled) {
+    background-color: var(--bma-surface-2);
+    border-color: var(--bma-primary);
+}
+
+.btn-sort-arrow {
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--bma-border);
+    background-color: var(--bma-surface-1);
+    color: var(--bma-text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-sort-arrow:hover:not(:disabled) {
+    background-color: var(--bma-primary);
+    color: #FFFFFF;
+    border-color: var(--bma-primary);
+}
+
+.btn-sort-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.bma-input,
+.bma-select,
+.bma-textarea {
+    width: 100%;
+    background-color: var(--bma-surface-1) !important;
+    color: var(--bma-text-primary) !important;
+    border: 1px solid var(--bma-border);
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+
+html.dark .bma-input,
+html.dark .bma-select,
+html.dark .bma-textarea {
+    background-color: #0B1912 !important;
+    color: #F1F5F9 !important;
+}
+
+.bma-input:focus,
+.bma-select:focus,
+.bma-textarea:focus {
+    border-color: var(--bma-primary);
+    box-shadow: 0 0 0 3px var(--bma-primary-soft);
+}
+
+/* ============================================================================
+ * Status Badges & Tables
+ * ============================================================================ */
+.bma-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.bma-badge-success {
+    background-color: var(--badge-success-bg);
+    color: var(--badge-success-text);
+}
+
+.bma-badge-warning {
+    background-color: var(--badge-warning-bg);
+    color: var(--badge-warning-text);
+}
+
+.bma-badge-danger {
+    background-color: var(--badge-danger-bg);
+    color: var(--badge-danger-text);
+}
+
+.bma-badge-indigo {
+    background-color: var(--badge-indigo-bg);
+    color: var(--badge-indigo-text);
+}
+
+.bma-badge-sky {
+    background-color: var(--badge-sky-bg);
+    color: var(--badge-sky-text);
+}
+
+.bma-table-container {
+    width: 100%;
+    overflow-x: auto !important;
+    border-radius: 0.85rem;
+    border: 1px solid var(--bma-thead-border);
+    background-color: var(--bma-surface-1);
+}
+
+.bma-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 720px;
+}
+
+.bma-table thead th,
+.bma-table th {
+    background-color: var(--bma-thead-bg);
+    color: var(--bma-thead-text);
+    font-weight: 700;
+    padding: 0.9rem 1rem;
+    border-bottom: 2px solid var(--bma-thead-border);
+    white-space: nowrap;
+}
+
+.bma-table td {
+    padding: 0.78rem 1rem;
+    border-bottom: 1px solid var(--bma-border);
+    color: var(--bma-text-primary);
+    vertical-align: middle;
+}
+
+.bma-table tbody tr:hover {
+    background-color: var(--bma-primary-soft);
+}
+
+/* ============================================================================
+ * AJAX Spin + Progress Bar & Skeleton
+ * ============================================================================ */
+#bmaTopProgressBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FDD835 0%, #4EBA6F 50%, #007B3E 100%);
+    z-index: 99999;
+    transition: width 0.25s ease, opacity 0.25s ease;
+    box-shadow: 0 0 10px rgba(78, 186, 111, 0.8);
+}
+
+.bma-ajax-progress-track {
+    width: 100%;
+    height: 0.65rem;
+    background-color: var(--bma-surface-2);
+    border-radius: 9999px;
+    overflow: hidden;
+    border: 1px solid var(--bma-border);
+}
+
+.bma-ajax-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--hd1) 0%, var(--hd3) 60%, var(--gold-bma) 100%);
+    border-radius: 9999px;
+    transition: width 0.25s ease;
+}
+
+#bmaGlobalSpinner {
+    backdrop-filter: blur(4px);
+    background-color: rgba(4, 31, 17, 0.55);
+}
+
+.bma-spin-ring {
+    width: 3.2rem;
+    height: 3.2rem;
+    border: 4px solid var(--bma-primary-soft);
+    border-top-color: var(--bma-primary);
+    border-right-color: var(--gold-bma);
+    border-radius: 50%;
+    animation: bmaSpin 0.75s linear infinite;
+}
+
+@keyframes bmaSpin {
+    to { transform: rotate(360deg); }
+}
+
+.ios-shortcut-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 1.45rem;
+    box-shadow: 0 6px 14px -3px rgba(0, 53, 27, 0.25);
+    transition: transform 0.2s ease;
+}
+
+.ios-shortcut-icon:active {
+    transform: scale(0.92);
+}
+
+.bma-skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bma-surface-2) 25%,
+        var(--bma-border) 50%,
+        var(--bma-surface-2) 75%
+    );
+    background-size: 200% 100%;
+    animation: bmaShimmer 1.5s infinite;
+    border-radius: 0.5rem;
+}
+
+@keyframes bmaShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ============================================================================
+ * Creative Tim Material Dashboard PRO Components Engine (Material-UI v4)
+ * ============================================================================ */
+
+/* 1. Floating Card Containers */
+.material-card {
+    background-color: #FFFFFF;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    position: relative;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    transition: all 0.25s ease;
+}
+html.dark .material-card {
+    background-color: #1E293B;
+    border-color: rgba(51, 65, 85, 0.8);
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* 2. Floating Card Headers (-mt-6) */
+.material-floating-header {
+    margin-top: -1.5rem;
+    border-radius: 0.875rem;
+    padding: 1.25rem 1.5rem;
+    color: #FFFFFF;
+    position: relative;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.header-grad-green {
+    background: linear-gradient(195deg, #00744B 0%, #008A56 50%, #00A368 100%);
+    box-shadow: 0 8px 26px -4px rgba(0, 116, 75, 0.45);
+}
+.header-grad-blue {
+    background: linear-gradient(195deg, #0971CE 0%, #0284C7 100%);
+    box-shadow: 0 8px 26px -4px rgba(9, 113, 206, 0.4);
+}
+.header-grad-amber {
+    background: linear-gradient(195deg, #FFB449 0%, #F59E0B 100%);
+    box-shadow: 0 8px 26px -4px rgba(255, 180, 73, 0.4);
+}
+.header-grad-magenta {
+    background: linear-gradient(195deg, #EB3DA9 0%, #BE123C 100%);
+    box-shadow: 0 8px 26px -4px rgba(235, 61, 169, 0.4);
+}
+.header-grad-purple {
+    background: linear-gradient(195deg, #480080 0%, #6D28D9 100%);
+    box-shadow: 0 8px 26px -4px rgba(72, 0, 128, 0.4);
+}
+
+/* 3. Stat Cards with Offset Floating Icon Box */
+.material-stat-card {
+    background-color: #FFFFFF;
+    border-radius: 1rem;
+    position: relative;
+    padding: 1rem 1.25rem 0.875rem 1.25rem;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+html.dark .material-stat-card {
+    background-color: #1E293B;
+    border-color: rgba(51, 65, 85, 0.8);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+}
+.material-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.08);
+}
+
+.material-stat-icon-box {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-top: -1.75rem;
+    border-radius: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 1.35rem;
+}
+.stat-icon-mint {
+    background: linear-gradient(195deg, #00C08A 0%, #00995D 100%);
+    box-shadow: 0 8px 20px -4px rgba(0, 192, 138, 0.45);
+}
+.stat-icon-green {
+    background: linear-gradient(195deg, #00744B 0%, #215A41 100%);
+    box-shadow: 0 8px 20px -4px rgba(0, 116, 75, 0.45);
+}
+.stat-icon-amber {
+    background: linear-gradient(195deg, #FFB449 0%, #F59E0B 100%);
+    box-shadow: 0 8px 20px -4px rgba(255, 180, 73, 0.45);
+}
+.stat-icon-magenta {
+    background: linear-gradient(195deg, #EB3DA9 0%, #BE123C 100%);
+    box-shadow: 0 8px 20px -4px rgba(235, 61, 169, 0.45);
+}
+.stat-icon-blue {
+    background: linear-gradient(195deg, #0971CE 0%, #0284C7 100%);
+    box-shadow: 0 8px 20px -4px rgba(9, 113, 206, 0.45);
+}
+.stat-icon-purple {
+    background: linear-gradient(195deg, #480080 0%, #6D28D9 100%);
+    box-shadow: 0 8px 20px -4px rgba(72, 0, 128, 0.45);
+}
+
+/* 4. Pure CSS Radio Tabs State Engine (0ms latency, zero script dependency) */
+#radioTabGeneral:checked ~ #settingsTabNav label[for="radioTabGeneral"],
+#radioTabRules:checked ~ #settingsTabNav label[for="radioTabRules"],
+#radioTabShifts:checked ~ #settingsTabNav label[for="radioTabShifts"],
+#radioTabPrefixes:checked ~ #settingsTabNav label[for="radioTabPrefixes"],
+#radioTabAffiliations:checked ~ #settingsTabNav label[for="radioTabAffiliations"] {
+    background: linear-gradient(195deg, #00744B, #00995D) !important;
+    color: #FFFFFF !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 14px 0 rgba(0, 116, 75, 0.35) !important;
+}
+#radioTabGeneral:checked ~ #settingsTabNav label[for="radioTabGeneral"] i,
+#radioTabRules:checked ~ #settingsTabNav label[for="radioTabRules"] i,
+#radioTabShifts:checked ~ #settingsTabNav label[for="radioTabShifts"] i,
+#radioTabPrefixes:checked ~ #settingsTabNav label[for="radioTabPrefixes"] i,
+#radioTabAffiliations:checked ~ #settingsTabNav label[for="radioTabAffiliations"] i {
+    color: #FFFFFF !important;
+}
+
+#radioTabGeneral:checked ~ #formGlobalSettings #tab-panel-general,
+#radioTabRules:checked ~ #formGlobalSettings #tab-panel-rules,
+#radioTabShifts:checked ~ #formGlobalSettings #tab-panel-shifts,
+#radioTabPrefixes:checked ~ #formGlobalSettings #tab-panel-prefixes,
+#radioTabAffiliations:checked ~ #formGlobalSettings #tab-panel-affiliations,
+body:has(#radioTabGeneral:checked) #tab-panel-general,
+body:has(#radioTabRules:checked) #tab-panel-rules,
+body:has(#radioTabShifts:checked) #tab-panel-shifts,
+body:has(#radioTabPrefixes:checked) #tab-panel-prefixes,
+body:has(#radioTabAffiliations:checked) #tab-panel-affiliations {
+    display: block !important;
+}
+
+body:has(#radioTabGeneral:checked) label[for="radioTabGeneral"],
+body:has(#radioTabRules:checked) label[for="radioTabRules"],
+body:has(#radioTabShifts:checked) label[for="radioTabShifts"],
+body:has(#radioTabPrefixes:checked) label[for="radioTabPrefixes"],
+body:has(#radioTabAffiliations:checked) label[for="radioTabAffiliations"] {
+    background: linear-gradient(195deg, #00744B, #00995D) !important;
+    color: #FFFFFF !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 14px 0 rgba(0, 116, 75, 0.35) !important;
+}
+
+/* 5. Kiosk Viewfinder HUD & Radar Pulse Utilities */
+.hud-gold-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: #00744B;
+    pointer-events: none;
+    z-index: 10;
+}
+.hud-tl { top: 12px; left: 12px; border-top: 3px solid #00744B; border-left: 3px solid #00744B; border-top-left-radius: 6px; }
+.hud-tr { top: 12px; right: 12px; border-top: 3px solid #00744B; border-right: 3px solid #00744B; border-top-right-radius: 6px; }
+.hud-bl { bottom: 12px; left: 12px; border-bottom: 3px solid #00744B; border-left: 3px solid #00744B; border-bottom-left-radius: 6px; }
+.hud-br { bottom: 12px; right: 12px; border-bottom: 3px solid #00744B; border-right: 3px solid #00744B; border-bottom-right-radius: 6px; }
+
+@keyframes bmaRadarPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 116, 75, 0.6); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 116, 75, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 116, 75, 0); }
+}
+
+.radar-pulse-beacon {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--bma-c-sec-3, #00C08A);
+    animation: bmaRadarPulse 2s infinite;
+}
+
+/* 6. SweetAlert2 Civic Material Skinning */
+.swal2-popup.bma-swal-popup {
+    border-radius: 1.5rem !important;
+    padding: 1.75rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+html.dark .swal2-popup.bma-swal-popup {
+    background: #1E293B !important;
+    color: #F1F5F9 !important;
+    border-color: #334155 !important;
+}
+.swal2-popup.bma-swal-popup .swal2-confirm {
+    background: linear-gradient(195deg, #00744B 0%, #00995D 100%) !important;
+    border-radius: 9999px !important;
+    padding: 0.625rem 1.75rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(0, 116, 75, 0.4) !important;
+}
+.swal2-popup.bma-swal-popup .swal2-cancel {
+    background: #F1F5F9 !important;
+    color: #475569 !important;
+    border-radius: 9999px !important;
+    padding: 0.625rem 1.5rem !important;
+    font-weight: 600 !important;
+}
+html.dark .swal2-popup.bma-swal-popup .swal2-cancel {
+    background: #334155 !important;
+    color: #E2E8F0 !important;
+}
+.swal2-icon.swal2-success {
+    border-color: #10B981 !important;
+    color: #10B981 !important;
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #10B981 !important;
+}
+html.dark .swal2-icon.swal2-success {
+    border-color: #34D399 !important;
+    color: #34D399 !important;
+}
+html.dark .swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #34D399 !important;
+}
+/* Ensure SweetAlert2 overlays sit above mobile drawer & z-[9999] modals, below progress bar, toast & global spinner */
+.swal2-container {
+    z-index: 99990 !important;
+}
+
+/* ============================================================================
+ * Material Dashboard PRO - Dynamic Stat Card & Floating Header Overrides
+ * Transforms controller-injected stat cards into floating icon boxes
+ * ============================================================================ */
+#dashboardKpiCardsGrid {
+    padding-top: 1.5rem;
+}
+
+#dashboardKpiCardsGrid .stat-card {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border-radius: 1rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+    position: relative !important;
+    padding: 0.875rem 0.875rem 0.75rem 0.875rem !important;
+    overflow: visible !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+html.dark #dashboardKpiCardsGrid .stat-card {
+    background: #1E293B !important;
+    color: #F8FAFC !important;
+    border-color: rgba(51, 65, 85, 0.8) !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35) !important;
+}
+
+#dashboardKpiCardsGrid .stat-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.12) !important;
+}
+
+#dashboardKpiCardsGrid .stat-card .deco-1,
+#dashboardKpiCardsGrid .stat-card .deco-2 {
+    display: none !important;
+}
+
+#dashboardKpiCardsGrid .stat-card .stat-content {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+#dashboardKpiCardsGrid .stat-card .stat-content > div:first-child {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    text-align: right !important;
+}
+
+#dashboardKpiCardsGrid .stat-card .stat-content > div:first-child > div:first-child {
+    padding-left: 2.85rem !important;
+    width: 100% !important;
+    min-height: 3.25rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    text-align: right !important;
+}
+
+#dashboardKpiCardsGrid .stat-card .stat-content > div:first-child > div:first-child span {
+    color: #64748B !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.015em !important;
+    word-break: break-word !important;
+}
+
+html.dark #dashboardKpiCardsGrid .stat-card .stat-content > div:first-child > div:first-child span {
+    color: #94A3B8 !important;
+}
+
+#dashboardKpiCardsGrid .stat-card .stat-content > div:first-child > div:first-child h3 {
+    color: #0F172A !important;
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    margin-top: 0.15rem !important;
+    line-height: 1.2 !important;
+}
+
+html.dark #dashboardKpiCardsGrid .stat-card .stat-content > div:first-child > div:first-child h3 {
+    color: #F8FAFC !important;
+}
+
+#dashboardKpiCardsGrid .stat-card .stat-content > div:first-child > div:first-child h3 span {
+    color: #94A3B8 !important;
+    font-size: 0.825rem !important;
+    font-weight: 600 !important;
+}
+
+/* Material Floating Icon Box (Offset -top-4 left-4) */
+#dashboardKpiCardsGrid .stat-card .stat-icon-box {
+    position: absolute !important;
+    top: -0.875rem !important;
+    left: 0.875rem !important;
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    border-radius: 0.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.15rem !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    backdrop-filter: none !important;
+}
+
+/* Card 1: บุคลากรทั้งหมด (Mint Teal to BMA Green) */
+#dashboardKpiCardsGrid .stat-card:nth-child(1) .stat-icon-box {
+    background: linear-gradient(195deg, #00C08A 0%, #00744B 100%) !important;
+    box-shadow: 0 8px 20px -4px rgba(0, 192, 138, 0.45) !important;
+}
+#dashboardKpiCardsGrid .stat-card:nth-child(1) .stat-icon-box i {
+    color: #FFFFFF !important;
+}
+
+/* Card 2: ปฏิบัติงานปกติ (BMA Primary Green to Deep Forest) */
+#dashboardKpiCardsGrid .stat-card:nth-child(2) .stat-icon-box {
+    background: linear-gradient(195deg, #00744B 0%, #215A41 100%) !important;
+    box-shadow: 0 8px 20px -4px rgba(0, 116, 75, 0.45) !important;
+}
+
+/* Card 3: มาสาย (Warm Amber to Canary Yellow) */
+#dashboardKpiCardsGrid .stat-card:nth-child(3) .stat-icon-box {
+    background: linear-gradient(195deg, #FFB449 0%, #F6DE51 100%) !important;
+    box-shadow: 0 8px 20px -4px rgba(255, 180, 73, 0.45) !important;
+}
+
+/* Card 4: ขาดราชการ/ไปราชการ/ลา (Berry Magenta to Rose) */
+#dashboardKpiCardsGrid .stat-card:nth-child(4) .stat-icon-box {
+    background: linear-gradient(195deg, #EB3DA9 0%, #BE123C 100%) !important;
+    box-shadow: 0 8px 20px -4px rgba(235, 61, 169, 0.45) !important;
+}
+
+/* Card 5: ปฏิบัติงานนอกเวลา (Sapphire Blue) */
+#dashboardKpiCardsGrid .stat-card:nth-child(5) .stat-icon-box {
+    background: linear-gradient(195deg, #0971CE 0%, #0284C7 100%) !important;
+    box-shadow: 0 8px 20px -4px rgba(9, 113, 206, 0.45) !important;
+}
+
+/* Bottom Progress Divider */
+#dashboardKpiCardsGrid .stat-card .mt-4 {
+    margin-top: 0.875rem !important;
+    padding-top: 0.65rem !important;
+    border-top: 1px solid #F1F5F9 !important;
+}
+html.dark #dashboardKpiCardsGrid .stat-card .mt-4 {
+    border-top-color: #334155 !important;
+}
+#dashboardKpiCardsGrid .stat-card .mt-4 span {
+    color: #64748B !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+}
+html.dark #dashboardKpiCardsGrid .stat-card .mt-4 span {
+    color: #94A3B8 !important;
+}
+#dashboardKpiCardsGrid .stat-card .stat-progress-track {
+    background: #E2E8F0 !important;
+    height: 0.35rem !important;
+    border-radius: 9999px !important;
+}
+html.dark #dashboardKpiCardsGrid .stat-card .stat-progress-track {
+    background: #334155 !important;
+}
+
+/* ============================================================================
+ * Modal Visibility & Flex Centering Immunity Contract
+ * ============================================================================ */
+div[id^="modal"].fixed.inset-0.hidden,
+.fixed.inset-0.hidden {
+    display: none !important;
+}
+
+div[id^="modal"].fixed.inset-0:not(.hidden),
+.fixed.inset-0:not(.hidden) {
+    display: flex !important;
+}
+
+#modalSettingsBody {
+    display: block !important;
+}
+
+body.bma-modal-open {
+    overflow: hidden !important;
+    overscroll-behavior: contain;
+}
+
+/* ============================================================================
+ * Checkin Floating Header Table Cards Spacing Contract (Plan V2.15)
+ * ป้องกันการชนกันของ Floating Header (-mt-6) กับกล่องลงเวลาด้านบน (สุทธิ 32px / 40px)
+ * ============================================================================ */
+.bma-checkin-table-card {
+    margin-top: 3.5rem !important;  /* 56px Mobile -> สุทธิ: 56px - 24px = 32px */
+    margin-bottom: 2rem !important;  /* 32px Mobile */
+}
+
+@media (min-width: 640px) {
+    .bma-checkin-table-card {
+        margin-top: 4rem !important;    /* 64px Desktop -> สุทธิ: 64px - 24px = 40px */
+        margin-bottom: 2.5rem !important; /* 40px Desktop */
+    }
+}
+
+#mobileDrawerHistoryMount .bma-checkin-table-card {
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+/* ============================================================================
+ * Shimmer Skeleton Loader (Plan V2.18)
+ * ============================================================================ */
+@keyframes bma-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.bma-skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(226, 232, 240, 0.6) 25%, rgba(241, 245, 249, 0.9) 37%, rgba(226, 232, 240, 0.6) 63%);
+    background-size: 200% 100%;
+    animation: bma-shimmer 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+html.dark .bma-skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(30, 41, 59, 0.7) 25%, rgba(51, 65, 85, 0.9) 37%, rgba(30, 41, 59, 0.7) 63%);
+    background-size: 200% 100%;
+}
+
+/* ============================================================================
+ * Data Health Preview Cell Highlights (Bulk Import - Plan V2.18)
+ * ============================================================================ */
+.cell-health-valid {
+    background-color: rgba(16, 185, 129, 0.08) !important;
+    color: #047857 !important;
+}
+html.dark .cell-health-valid {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #34D399 !important;
+}
+
+.cell-health-healed {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+    color: #B45309 !important;
+}
+html.dark .cell-health-healed {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+    color: #FBBF24 !important;
+}
+
+.cell-health-error {
+    background-color: rgba(244, 63, 94, 0.12) !important;
+    color: #BE123C !important;
+    outline: 1px dashed rgba(244, 63, 94, 0.6) !important;
+    outline-offset: -1px;
+}
+html.dark .cell-health-error {
+    background-color: rgba(244, 63, 94, 0.2) !important;
+    color: #FB7185 !important;
+    outline: 1px dashed rgba(244, 63, 94, 0.6) !important;
+    outline-offset: -1px;
+}
+
+/* ============================================================================
+ * Login Remember Me Toggle Switch Animation Contract (Plan V2.21)
+ * ============================================================================ */
+#chkRememberMe:checked ~ .bma-toggle-track,
+.peer:checked ~ .bma-toggle-track {
+    background-color: #00744B !important;
+}
+
+#chkRememberMe:checked ~ .bma-toggle-track .bma-toggle-knob,
+.peer:checked ~ .bma-toggle-track .bma-toggle-knob {
+    transform: translateX(1rem) !important;
+}
+
+.bma-toggle-knob {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.bma-toggle-track {
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#chkRememberMe:focus-visible ~ .bma-toggle-track,
+.peer:focus-visible ~ .bma-toggle-track {
+    outline: 2px solid #00744B;
+    outline-offset: 2px;
+}
+
+/* ============================================================================
+ * Sticky Check-in Bottom Action Bar (Plan V2.22)
+ * On mobile (<1024px), docked to bottom edge; on desktop (>=1024px), flows naturally
+ * ============================================================================ */
+.bma-sticky-checkin-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.08), 0 -8px 10px -6px rgba(0, 0, 0, 0.04);
+    padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom));
+}
+html.dark .bma-sticky-checkin-bar {
+    background: rgba(17, 24, 22, 0.96);
+    border-top-color: rgba(51, 65, 85, 0.8);
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+@media (min-width: 1024px) {
+    .bma-sticky-checkin-bar {
+        position: static !important;
+        background: transparent !important;
+        border-top: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+}
+/* ============================================================================
+ * Checkin Mobile Viewport Lock Utilities (Zero-Scroll Lock)
+ * ============================================================================ */
+@media (max-width: 1023px) {
+    body.checkin-viewport-lock {
+        min-height: 100dvh;
+        max-height: 100dvh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+@media (min-width: 1024px) {
+    body.checkin-viewport-lock {
+        height: 100dvh;
+        max-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    body.checkin-viewport-lock > header,
+    body.checkin-viewport-lock > nav,
+    body.checkin-viewport-lock > footer {
+        flex-shrink: 0;
+    }
+    body.checkin-viewport-lock > main {
+        flex: 1 1 0%;
+        min-height: 0;
+        height: auto;
+        max-height: none;
+        overflow-y: auto;
+    }
+}
+
+/* Single Action Icon Buttons (w-8.5 h-8.5 / 34px) */
+.w-8\.5 { width: 2.125rem; }
+.h-8\.5 { height: 2.125rem; }
+
+/* --- GPS Card Isolation & Leaflet Pane Stacking Defense --- */
+#gpsSectionCard {
+    isolation: isolate;
+    z-index: 0;
+    padding: 0 !important;
+}
+#inlineGpsLeafletMap .leaflet-pane {
+    z-index: 10 !important;
+}
+#inlineGpsLeafletMap .leaflet-tile-pane {
+    z-index: 5 !important;
+}
+#inlineGpsLeafletMap .leaflet-marker-pane {
+    z-index: 20 !important;
+}
+#inlineGpsLeafletMap .leaflet-control-container {
+    z-index: 30 !important;
+}
+
+/* ============================================================================
+ * Incremental Realtime DOM Diffing & Concurrency Styles (Plan PIPE-20261109)
+ * ============================================================================ */
+.row-enter-highlight {
+    animation: rowGreenPulse 2.5s ease-out forwards;
+}
+
+@keyframes rowGreenPulse {
+    0% { background-color: rgba(16, 185, 129, 0.45); transform: translateY(-6px); }
+    50% { background-color: rgba(16, 185, 129, 0.2); }
+    100% { background-color: transparent; transform: translateY(0); }
+}
+
+.row-update-highlight {
+    animation: rowAmberPulse 2s ease-out forwards;
+}
+
+@keyframes rowAmberPulse {
+    0% { background-color: rgba(245, 158, 11, 0.45); }
+    50% { background-color: rgba(245, 158, 11, 0.15); }
+    100% { background-color: transparent; }
+}
+
+.row-leave-fade {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0 !important;
+    transform: translateX(25px) scale(0.97) !important;
+    background-color: rgba(244, 63, 94, 0.25) !important;
+    pointer-events: none !important;
+}
+
+.row-locked-highlight {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    border-left: 4px solid #3b82f6 !important;
+}
+
+.counter-badge-pop {
+    animation: badgePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badgePop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+

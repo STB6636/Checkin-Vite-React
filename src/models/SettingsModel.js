@@ -1,0 +1,552 @@
+/**
+ * @file assets/js/models/SettingsModel.js
+ * @description คลาสจัดการข้อมูลตั้งค่าระบบ (รองรับ allow_checkin_start_time, checkout_grace_minutes, filter_shifts_by_realtime และการแสดงชื่อช่วงเวลามาตรฐาน)
+ */
+
+import { Config } from '../core/Config.js';
+import { DatabaseService } from '../core/DatabaseService.js';
+import { UIHelpers } from '../core/UIHelpers.js';
+
+export class SettingsModel {
+    /**
+     * จัดรูปแบบชื่อช่วงเวลาให้เป็นมาตรฐาน: "ชื่อตามที่ตั้งเอาไว้ ('เวลาเริ่มงาน' - 'เวลาเลิกงาน')"
+     * และหากเป็นเวลาเลิกงานข้ามวัน ให้เพิ่ม "(ข้ามวัน)" ต่อท้ายตัวเลือก
+     * @param {Object} shift
+     * @returns {string}
+     */
+    static formatShiftDisplayText(shift) {
+        if (!shift) return '-';
+        // ตัดวงเล็บเวลาเดิมที่อาจติดอยู่ในชื่อออกก่อน เพื่อไม่ให้แสดงวงเล็บเวลาซ้ำซ้อน
+        const cleanBaseName = String(shift.name || 'ช่วงเวลาทำงาน')
+            .replace(/\s*\(\d{1,2}[:.]\d{2}\s*-\s*\d{1,2}[:.]\d{2}.*?\)/g, '')
+            .replace(/\s*\(ระบุเวลาเอง\)/g, '')
+            .replace(/\s*\(ข้ามวัน\)/g, '')
+            .trim();
+
+        if (shift.is_custom) {
+            return `${cleanBaseName} (ระบุเวลาเอง)`;
+        }
+
+        const checkIn = UIHelpers.formatTime24(shift.check_in || '08:30');
+        const checkOut = UIHelpers.formatTime24(shift.check_out || '16:30');
+        const inMin = UIHelpers.timeToMinutes(checkIn);
+        const outMin = UIHelpers.timeToMinutes(checkOut);
+        const isOvernight = Boolean(shift.is_overnight || (inMin >= 0 && outMin >= 0 && outMin < inMin));
+
+        return `${cleanBaseName} (${checkIn} - ${checkOut})${isOvernight ? ' (ข้ามวัน)' : ''}`;
+    }
+
+    static async getSettings(forceRefresh = false) {
+        if (!forceRefresh) {
+            const cached = sessionStorage.getItem(Config.STORAGE_KEYS.CACHED_SETTINGS);
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (parsed && typeof parsed === 'object' && typeof parsed.announcement_enabled === 'boolean') {
+                        if (!Array.isArray(parsed.offsite_job_types) || parsed.offsite_job_types.length === 0) {
+                            try {
+                                const local = JSON.parse(localStorage.getItem('bma_offsite_job_types') || '[]');
+                                parsed.offsite_job_types = (Array.isArray(local) && local.length > 0) ? local : Config.DEFAULT_SETTINGS.offsite_job_types;
+                            } catch (e) {
+                                parsed.offsite_job_types = Config.DEFAULT_SETTINGS.offsite_job_types;
+                            }
+                        }
+                        if (!Array.isArray(parsed.special_request_reasons) || parsed.special_request_reasons.length === 0) {
+                            try {
+                                const local = JSON.parse(localStorage.getItem('bma_special_request_reasons') || '[]');
+                                parsed.special_request_reasons = (Array.isArray(local) && local.length > 0) ? local : Config.DEFAULT_SETTINGS.special_request_reasons;
+                            } catch (e) {
+                                parsed.special_request_reasons = Config.DEFAULT_SETTINGS.special_request_reasons;
+                            }
+                        }
+                        return parsed;
+                    }
+                } catch (e) {
+                    console.warn('Invalid cached settings:', e);
+                }
+            }
+        }
+
+        const dbService = DatabaseService.getInstance();
+        let db = dbService.client;
+        let { data, error } = await db
+            .from('system_settings')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
+
+        if (error && String(error.message || '').includes('The schema must be one of the following: public')) {
+            console.warn('[SettingsModel] Staging schema not exposed yet, falling back to public schema');
+            db = dbService.publicClient;
+            const res = await db.from('system_settings').select('*').eq('id', 1).maybeSingle();
+            data = res.data;
+            error = res.error;
+        }
+
+        if (error || !data) {
+            console.warn('Using fallback default settings:', error);
+            return structuredClone(Config.DEFAULT_SETTINGS);
+        }
+
+        const rawColors = (data.category_colors && typeof data.category_colors === 'object') ? data.category_colors : {};
+        const announcementFallback = (rawColors._announcement && typeof rawColors._announcement === 'object')
+            ? rawColors._announcement
+            : null;
+        const mergedColors = {
+            ...Config.DEFAULT_SETTINGS.category_colors,
+            ...rawColors
+        };
+        delete mergedColors._announcement;
+
+        const hasAnnouncementCols = typeof data.announcement_enabled === 'boolean' || data.announcement_updated_at !== undefined;
+        const annSource = hasAnnouncementCols ? data : (announcementFallback || {});
+
+        const rawShifts = Array.isArray(data.work_shifts) && data.work_shifts.length > 0
+            ? data.work_shifts
+            : Config.DEFAULT_SETTINGS.work_shifts;
+
+        const normalizedShifts = rawShifts.map(s => {
+            const checkIn = UIHelpers.formatTime24(s.check_in || '08:30');
+            const checkOut = UIHelpers.formatTime24(s.check_out || '16:30');
+            const inMin = UIHelpers.timeToMinutes(checkIn);
+            const outMin = UIHelpers.timeToMinutes(checkOut);
+            const isOvernight = Boolean(s.is_overnight || (inMin > 0 && outMin >= 0 && outMin < inMin));
+
+            return {
+                name: s.name || 'เวลาราชการปกติ',
+                check_in: checkIn,
+                check_out: checkOut,
+                is_custom: Boolean(s.is_custom),
+                is_overtime: Boolean(s.is_overtime),
+                is_overnight: isOvernight,
+                allow_early_checkin: Boolean(s.allow_early_checkin)
+            };
+        });
+
+        const merged = {
+            ...Config.DEFAULT_SETTINGS,
+            ...data,
+            header_system_title: String(data.header_system_title || Config.DEFAULT_SETTINGS.header_system_title),
+            allow_checkin_start_time: UIHelpers.formatTime24(data.allow_checkin_start_time || Config.DEFAULT_SETTINGS.allow_checkin_start_time),
+            standard_check_in: UIHelpers.formatTime24(data.standard_check_in || Config.DEFAULT_SETTINGS.standard_check_in),
+            standard_check_out: UIHelpers.formatTime24(data.standard_check_out || Config.DEFAULT_SETTINGS.standard_check_out),
+            late_threshold_minutes: Number(data.late_threshold_minutes ?? Config.DEFAULT_SETTINGS.late_threshold_minutes),
+            checkout_grace_minutes: Number(data.checkout_grace_minutes ?? Config.DEFAULT_SETTINGS.checkout_grace_minutes),
+            allow_gallery_fallback: typeof data.allow_gallery_fallback === 'boolean'
+                ? data.allow_gallery_fallback
+                : (localStorage.getItem('bma_allow_gallery_fallback') !== null
+                    ? localStorage.getItem('bma_allow_gallery_fallback') !== 'false'
+                    : Boolean(Config.DEFAULT_SETTINGS.allow_gallery_fallback !== false)),
+            filter_shifts_by_realtime: typeof data.filter_shifts_by_realtime === 'boolean'
+                ? data.filter_shifts_by_realtime
+                : (localStorage.getItem('bma_filter_shifts_by_realtime') !== null
+                    ? localStorage.getItem('bma_filter_shifts_by_realtime') !== 'false'
+                    : Boolean(Config.DEFAULT_SETTINGS.filter_shifts_by_realtime)),
+            early_shift_window_minutes: typeof data.early_shift_window_minutes === 'number'
+                ? data.early_shift_window_minutes
+                : (localStorage.getItem('bma_early_shift_window_minutes') !== null
+                    ? Number(localStorage.getItem('bma_early_shift_window_minutes')) || 30
+                    : Number(Config.DEFAULT_SETTINGS.early_shift_window_minutes ?? 30)),
+            enforce_geofence_radius: (() => {
+                let enforceGeofence = true;
+                if (typeof data.enforce_geofence_radius === 'boolean') {
+                    enforceGeofence = data.enforce_geofence_radius;
+                } else if (data.category_colors && typeof data.category_colors === 'object' && typeof data.category_colors.enforce_geofence_radius === 'boolean') {
+                    enforceGeofence = data.category_colors.enforce_geofence_radius;
+                } else {
+                    const localEnforceGeofence = localStorage.getItem('bma_enforce_geofence_radius');
+                    if (localEnforceGeofence !== null) {
+                        enforceGeofence = localEnforceGeofence !== 'false';
+                    }
+                }
+                try { localStorage.setItem('bma_enforce_geofence_radius', String(enforceGeofence)); } catch (e) {}
+                return enforceGeofence;
+            })(),
+            disable_normal_hours_checkin: typeof data.disable_normal_hours_checkin === 'boolean'
+                ? data.disable_normal_hours_checkin
+                : (localStorage.getItem('bma_disable_normal_hours_checkin') !== null
+                    ? localStorage.getItem('bma_disable_normal_hours_checkin') === 'true'
+                    : Boolean(Config.DEFAULT_SETTINGS.disable_normal_hours_checkin)),
+            google_drive_script_url: String(data.google_drive_script_url ?? ''),
+            google_drive_folder_id: String(data.google_drive_folder_id ?? ''),
+            footer_description: String(data.footer_description ?? Config.DEFAULT_SETTINGS.footer_description),
+            single_click_checkin: Boolean(data.single_click_checkin ?? Config.DEFAULT_SETTINGS.single_click_checkin),
+            randomize_gps_checkout: typeof data.randomize_gps_checkout === 'boolean'
+                ? data.randomize_gps_checkout
+                : (localStorage.getItem('bma_randomize_gps_checkout') !== null
+                    ? localStorage.getItem('bma_randomize_gps_checkout') !== 'false'
+                    : Boolean(Config.DEFAULT_SETTINGS.randomize_gps_checkout)),
+            randomize_gps_radius_meters: typeof data.randomize_gps_radius_meters === 'number'
+                ? data.randomize_gps_radius_meters
+                : (localStorage.getItem('bma_randomize_gps_radius_meters') !== null
+                    ? Number(localStorage.getItem('bma_randomize_gps_radius_meters')) || 20
+                    : Number(Config.DEFAULT_SETTINGS.randomize_gps_radius_meters ?? 20)),
+            prefixes: Array.isArray(data.prefixes) ? data.prefixes : Config.DEFAULT_SETTINGS.prefixes,
+            positions: Array.isArray(data.positions) ? data.positions : Config.DEFAULT_SETTINGS.positions,
+            affiliations: Array.isArray(data.affiliations) ? data.affiliations : Config.DEFAULT_SETTINGS.affiliations,
+            remarks: Array.isArray(data.remarks) ? data.remarks : Config.DEFAULT_SETTINGS.remarks,
+            offsite_job_types: (Array.isArray(data.offsite_job_types) && data.offsite_job_types.length > 0)
+                ? data.offsite_job_types
+                : (() => {
+                    try {
+                        const local = JSON.parse(localStorage.getItem('bma_offsite_job_types') || '[]');
+                        return (Array.isArray(local) && local.length > 0) ? local : Config.DEFAULT_SETTINGS.offsite_job_types;
+                    } catch (e) {
+                        return Config.DEFAULT_SETTINGS.offsite_job_types;
+                    }
+                })(),
+            special_request_reasons: (Array.isArray(data.special_request_reasons) && data.special_request_reasons.length > 0)
+                ? data.special_request_reasons
+                : (() => {
+                    try {
+                        const local = JSON.parse(localStorage.getItem('bma_special_request_reasons') || '[]');
+                        return (Array.isArray(local) && local.length > 0) ? local : Config.DEFAULT_SETTINGS.special_request_reasons;
+                    } catch (e) {
+                        return Config.DEFAULT_SETTINGS.special_request_reasons;
+                    }
+                })(),
+            official_locations: Array.isArray(data.official_locations) && data.official_locations.length > 0
+                ? data.official_locations
+                : (localStorage.getItem('bma_official_locations_v2') !== null
+                    ? JSON.parse(localStorage.getItem('bma_official_locations_v2') || '[]')
+                    : Config.DEFAULT_SETTINGS.official_locations),
+            work_shifts: normalizedShifts,
+            category_colors: mergedColors,
+            announcement_enabled: Boolean(annSource.announcement_enabled ?? Config.DEFAULT_SETTINGS.announcement_enabled),
+            announcement_mode: annSource.announcement_mode === 'image' ? 'image' : 'text',
+            announcement_start_date: String(annSource.announcement_start_date ?? ''),
+            announcement_end_date: String(annSource.announcement_end_date ?? ''),
+            announcement_title: String(annSource.announcement_title ?? ''),
+            announcement_body: String(annSource.announcement_body ?? ''),
+            announcement_image_url: String(annSource.announcement_image_url ?? ''),
+            announcement_drive_folder_id: String(annSource.announcement_drive_folder_id ?? ''),
+            announcement_updated_at: String(annSource.announcement_updated_at ?? '')
+        };
+
+        sessionStorage.setItem(Config.STORAGE_KEYS.CACHED_SETTINGS, JSON.stringify(merged));
+        return merged;
+    }
+
+    static async updateSettings(payload) {
+        const db = DatabaseService.getInstance().client;
+        const enforceGeofenceFlag = Boolean(payload.enforce_geofence_radius !== false);
+        const cleanInputColors = { ...(payload.category_colors || Config.DEFAULT_SETTINGS.category_colors) };
+        delete cleanInputColors._announcement;
+        const mergedCategoryColors = {
+            ...cleanInputColors,
+            enforce_geofence_radius: enforceGeofenceFlag
+        };
+        const announcementPayload = {
+            announcement_enabled: Boolean(payload.announcement_enabled),
+            announcement_mode: payload.announcement_mode === 'image' ? 'image' : 'text',
+            announcement_start_date: String(payload.announcement_start_date || '').trim(),
+            announcement_end_date: String(payload.announcement_end_date || '').trim(),
+            announcement_title: String(payload.announcement_title || '').trim(),
+            announcement_body: String(payload.announcement_body ?? ''),
+            announcement_image_url: String(payload.announcement_image_url || '').trim(),
+            announcement_drive_folder_id: String(payload.announcement_drive_folder_id || '').trim(),
+            announcement_updated_at: String(payload.announcement_updated_at || '').trim()
+        };
+        const updateData = {
+            id: 1,
+            organization_name: payload.organization_name || 'กรุงเทพมหานคร',
+            bureau_name: payload.bureau_name || 'สำนักเทศกิจ',
+            header_system_title: payload.header_system_title || 'BMA e-Government Time Attendance System',
+            logo_url: payload.logo_url || '',
+            footer_description: payload.footer_description ?? '',
+            require_photo: Boolean(payload.require_photo),
+            allow_gallery_fallback: Boolean(payload.allow_gallery_fallback),
+            require_gps: Boolean(payload.require_gps),
+            single_click_checkin: Boolean(payload.single_click_checkin),
+            randomize_gps_checkout: Boolean(payload.randomize_gps_checkout),
+            randomize_gps_radius_meters: Math.max(5, Math.min(100, Number(payload.randomize_gps_radius_meters || 20))),
+            allow_checkin_start_time: UIHelpers.formatTime24(payload.allow_checkin_start_time || '06:00'),
+            standard_check_in: UIHelpers.formatTime24(payload.standard_check_in || '08:30'),
+            standard_check_out: UIHelpers.formatTime24(payload.standard_check_out || '16:30'),
+            late_threshold_minutes: Number(payload.late_threshold_minutes ?? 30),
+            checkout_grace_minutes: Number(payload.checkout_grace_minutes ?? 30),
+            filter_shifts_by_realtime: payload.filter_shifts_by_realtime !== false,
+            early_shift_window_minutes: Math.max(0, Math.min(1440, Number(payload.early_shift_window_minutes ?? 30))),
+            disable_normal_hours_checkin: Boolean(payload.disable_normal_hours_checkin),
+            google_drive_script_url: String(payload.google_drive_script_url || '').trim(),
+            google_drive_folder_id: String(payload.google_drive_folder_id || '').trim(),
+            prefixes: payload.prefixes || [],
+            positions: payload.positions || [],
+            affiliations: payload.affiliations || [],
+            remarks: Array.from(new Set([
+                ...(Array.isArray(payload.offsite_job_types) ? payload.offsite_job_types : Config.DEFAULT_SETTINGS.offsite_job_types),
+                ...(Array.isArray(payload.special_request_reasons) ? payload.special_request_reasons : Config.DEFAULT_SETTINGS.special_request_reasons)
+            ])),
+            offsite_job_types: Array.isArray(payload.offsite_job_types) ? payload.offsite_job_types : Config.DEFAULT_SETTINGS.offsite_job_types,
+            special_request_reasons: Array.isArray(payload.special_request_reasons) ? payload.special_request_reasons : Config.DEFAULT_SETTINGS.special_request_reasons,
+            official_locations: Array.isArray(payload.official_locations) ? payload.official_locations : Config.DEFAULT_SETTINGS.official_locations,
+            work_shifts: payload.work_shifts || [],
+            enforce_geofence_radius: enforceGeofenceFlag,
+            category_colors: mergedCategoryColors,
+            ...announcementPayload,
+            updated_at: new Date().toISOString()
+        };
+
+        let { data, error } = await db
+            .from('system_settings')
+            .upsert(updateData, { onConflict: 'id' })
+            .select()
+            .single();
+
+        if (error) {
+            const fallbackUpdateData = { ...updateData };
+            let maxRetries = 25;
+            const isMissingColErr = (err) => {
+                if (!err) return false;
+                const msg = `${err.message || ''} ${err.details || ''} ${err.hint || ''}`;
+                return err.code === 'PGRST204'
+                    || err.code === '42703'
+                    || msg.includes('column')
+                    || msg.includes('does not exist')
+                    || msg.includes('schema cache');
+            };
+            while (error && maxRetries > 0 && isMissingColErr(error)) {
+                maxRetries--;
+                let strippedAny = false;
+                const errMsg = `${error.message || ''} ${error.details || ''} ${error.hint || ''}`;
+                const knownOptionalColumns = [
+                    'offsite_job_types',
+                    'special_request_reasons',
+                    'official_locations',
+                    'allow_gallery_fallback',
+                    'filter_shifts_by_realtime',
+                    'disable_normal_hours_checkin',
+                    'randomize_gps_radius_meters',
+                    'randomize_gps_checkout',
+                    'early_shift_window_minutes',
+                    'announcement_enabled',
+                    'announcement_mode',
+                    'announcement_start_date',
+                    'announcement_end_date',
+                    'announcement_title',
+                    'announcement_body',
+                    'announcement_image_url',
+                    'announcement_drive_folder_id',
+                    'announcement_updated_at'
+                ];
+                for (const col of knownOptionalColumns) {
+                    if (errMsg.includes(col) && col in fallbackUpdateData) {
+                        delete fallbackUpdateData[col];
+                        if (col.startsWith('announcement_')) {
+                            fallbackUpdateData.category_colors = {
+                                ...mergedCategoryColors,
+                                _announcement: announcementPayload
+                            };
+                        }
+                        strippedAny = true;
+                    }
+                }
+                if (errMsg.includes('enforce_geofence_radius') || error.code === '42703') {
+                    if ('enforce_geofence_radius' in fallbackUpdateData) {
+                        delete fallbackUpdateData.enforce_geofence_radius;
+                        fallbackUpdateData.category_colors = {
+                            ...(fallbackUpdateData.category_colors || mergedCategoryColors)
+                        };
+                        strippedAny = true;
+                    }
+                }
+                if (!strippedAny) break;
+                const retryRes = await db.from('system_settings').upsert(fallbackUpdateData, { onConflict: 'id' }).select().single();
+                data = retryRes.data;
+                error = retryRes.error;
+            }
+        }
+        if (error) {
+            console.error('Update system_settings error:', error);
+            return { success: false, message: 'ไม่สามารถบันทึกการตั้งค่าระบบได้: ' + error.message };
+        }
+
+        try {
+            DatabaseService.getInstance().broadcastRealtimeEvent('settings_updated', {
+                enforce_geofence_radius: enforceGeofenceFlag,
+                announcement_updated_at: announcementPayload.announcement_updated_at
+            });
+        } catch (e) {}
+
+        const enforceGeofenceVal = enforceGeofenceFlag;
+        try { localStorage.setItem('bma_enforce_geofence_radius', String(enforceGeofenceVal)); } catch (e) {}
+        const allowGalleryVal = Boolean(payload.allow_gallery_fallback);
+        try { localStorage.setItem('bma_allow_gallery_fallback', String(allowGalleryVal)); } catch (e) {}
+        const filterRealtimeVal = payload.filter_shifts_by_realtime !== false;
+        const disableNormalVal = Boolean(payload.disable_normal_hours_checkin);
+        try { localStorage.setItem('bma_disable_normal_hours_checkin', String(disableNormalVal)); } catch (e) {}
+        localStorage.setItem('bma_filter_shifts_by_realtime', String(filterRealtimeVal));
+        const randomizeGpsVal = Boolean(payload.randomize_gps_checkout);
+        try { localStorage.setItem('bma_randomize_gps_checkout', String(randomizeGpsVal)); } catch (e) {}
+        const randomizeRadiusVal = Math.max(5, Math.min(100, Number(payload.randomize_gps_radius_meters || 20)));
+        try { localStorage.setItem('bma_randomize_gps_radius_meters', String(randomizeRadiusVal)); } catch (e) {}
+        const earlyShiftWindowVal = Math.max(0, Math.min(1440, Number(payload.early_shift_window_minutes ?? 30)));
+        try { localStorage.setItem('bma_early_shift_window_minutes', String(earlyShiftWindowVal)); } catch (e) {}
+        const officialLocationsVal = Array.isArray(payload.official_locations) ? payload.official_locations : Config.DEFAULT_SETTINGS.official_locations;
+        try { localStorage.setItem('bma_official_locations_v2', JSON.stringify(officialLocationsVal)); } catch (e) {}
+        const offsiteJobTypesVal = Array.isArray(payload.offsite_job_types) ? payload.offsite_job_types : Config.DEFAULT_SETTINGS.offsite_job_types;
+        try { localStorage.setItem('bma_offsite_job_types', JSON.stringify(offsiteJobTypesVal)); } catch (e) {}
+        const specialReasonsVal = Array.isArray(payload.special_request_reasons) ? payload.special_request_reasons : Config.DEFAULT_SETTINGS.special_request_reasons;
+        try { localStorage.setItem('bma_special_request_reasons', JSON.stringify(specialReasonsVal)); } catch (e) {}
+        const normalizedSavedColors = {
+            ...Config.DEFAULT_SETTINGS.category_colors,
+            ...(data?.category_colors && typeof data.category_colors === 'object' ? data.category_colors : mergedCategoryColors)
+        };
+        delete normalizedSavedColors._announcement;
+
+        const normalizedSavedData = {
+            ...Config.DEFAULT_SETTINGS,
+            ...data,
+            category_colors: normalizedSavedColors,
+            allow_gallery_fallback: typeof data?.allow_gallery_fallback === 'boolean'
+                ? data.allow_gallery_fallback
+                : allowGalleryVal,
+            filter_shifts_by_realtime: typeof data?.filter_shifts_by_realtime === 'boolean'
+                ? data.filter_shifts_by_realtime
+                : filterRealtimeVal,
+            early_shift_window_minutes: typeof data?.early_shift_window_minutes === 'number'
+                ? data.early_shift_window_minutes
+                : earlyShiftWindowVal,
+            randomize_gps_checkout: typeof data?.randomize_gps_checkout === 'boolean'
+                ? data.randomize_gps_checkout
+                : randomizeGpsVal,
+            randomize_gps_radius_meters: typeof data?.randomize_gps_radius_meters === 'number'
+                ? data.randomize_gps_radius_meters
+                : randomizeRadiusVal,
+            disable_normal_hours_checkin: typeof data?.disable_normal_hours_checkin === 'boolean'
+                ? data.disable_normal_hours_checkin
+                : disableNormalVal,
+            enforce_geofence_radius: typeof data?.enforce_geofence_radius === 'boolean'
+                ? data.enforce_geofence_radius
+                : enforceGeofenceVal,
+            official_locations: Array.isArray(data?.official_locations)
+                ? data.official_locations
+                : officialLocationsVal,
+            offsite_job_types: Array.isArray(data?.offsite_job_types)
+                ? data.offsite_job_types
+                : offsiteJobTypesVal,
+            special_request_reasons: Array.isArray(data?.special_request_reasons)
+                ? data.special_request_reasons
+                : specialReasonsVal,
+            announcement_enabled: typeof data?.announcement_enabled === 'boolean'
+                ? data.announcement_enabled
+                : announcementPayload.announcement_enabled,
+            announcement_mode: data?.announcement_mode !== undefined
+                ? (data.announcement_mode === 'image' ? 'image' : 'text')
+                : announcementPayload.announcement_mode,
+            announcement_start_date: data?.announcement_start_date !== undefined
+                ? String(data.announcement_start_date || '')
+                : announcementPayload.announcement_start_date,
+            announcement_end_date: data?.announcement_end_date !== undefined
+                ? String(data.announcement_end_date || '')
+                : announcementPayload.announcement_end_date,
+            announcement_title: data?.announcement_title !== undefined
+                ? String(data.announcement_title || '')
+                : announcementPayload.announcement_title,
+            announcement_body: data?.announcement_body !== undefined
+                ? String(data.announcement_body ?? '')
+                : announcementPayload.announcement_body,
+            announcement_image_url: data?.announcement_image_url !== undefined
+                ? String(data.announcement_image_url || '')
+                : announcementPayload.announcement_image_url,
+            announcement_drive_folder_id: data?.announcement_drive_folder_id !== undefined
+                ? String(data.announcement_drive_folder_id || '')
+                : announcementPayload.announcement_drive_folder_id,
+            announcement_updated_at: data?.announcement_updated_at !== undefined
+                ? String(data.announcement_updated_at || '')
+                : announcementPayload.announcement_updated_at
+        };
+        sessionStorage.setItem(Config.STORAGE_KEYS.CACHED_SETTINGS, JSON.stringify(normalizedSavedData));
+        window.dispatchEvent(new CustomEvent('bma:settings-updated', { detail: normalizedSavedData }));
+
+        return {
+            success: true,
+            data: normalizedSavedData,
+            message: 'บันทึกการตั้งค่าระบบเรียบร้อยแล้ว'
+        };
+    }
+
+    static moveItemInArray(arr, fromIndex, direction) {
+        if (!Array.isArray(arr)) return false;
+        const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
+        if (toIndex < 0 || toIndex >= arr.length) return false;
+
+        const temp = arr[fromIndex];
+        arr[fromIndex] = arr[toIndex];
+        arr[toIndex] = temp;
+        return true;
+    }
+
+    static fileToDataUrl(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = (err) => reject(err);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    static getUniquePositionTypes(settings) {
+        const positions = settings?.positions || [];
+        return [...new Set(positions.map(p => p.type).filter(Boolean))];
+    }
+
+    static getUniquePositionTitles(settings, filterType = '') {
+        const positions = settings?.positions || [];
+        const filtered = filterType
+            ? positions.filter(p => p.type === filterType)
+            : positions;
+        return [...new Set(filtered.map(p => p.title).filter(Boolean))];
+    }
+
+    static getUniquePositionLevels(settings, filterType = '', filterTitle = '') {
+        let positions = settings?.positions || [];
+        if (filterType) {
+            positions = positions.filter(p => p.type === filterType);
+        }
+        if (filterTitle) {
+            positions = positions.filter(p => p.title === filterTitle);
+        }
+        return [...new Set(positions.map(p => p.level).filter(Boolean))];
+    }
+
+    static getUniqueOrganizations(settings) {
+        const affiliations = settings?.affiliations || [];
+        const list = [...new Set(affiliations.map(a => a.organization).filter(Boolean))];
+        return list.length > 0 ? list : [settings?.organization_name || 'กรุงเทพมหานคร'];
+    }
+
+    static getUniqueBureaus(settings, filterOrg = '') {
+        let affiliations = settings?.affiliations || [];
+        if (filterOrg) {
+            affiliations = affiliations.filter(a => a.organization === filterOrg);
+        }
+        const list = [...new Set(affiliations.map(a => a.bureau).filter(Boolean))];
+        return list.length > 0 ? list : [settings?.bureau_name || 'สำนักเทศกิจ'];
+    }
+
+    static getUniqueDivisions(settings, filterBureau = '', filterOrg = '') {
+        let affiliations = settings?.affiliations || [];
+        if (filterOrg) {
+            affiliations = affiliations.filter(a => a.organization === filterOrg);
+        }
+        if (filterBureau) {
+            affiliations = affiliations.filter(a => a.bureau === filterBureau);
+        }
+        return [...new Set(affiliations.map(a => a.division).filter(Boolean))];
+    }
+
+    static getUniqueGroups(settings, filterBureau = '', filterDivision = '', filterOrg = '') {
+        let affiliations = settings?.affiliations || [];
+        if (filterOrg) {
+            affiliations = affiliations.filter(a => a.organization === filterOrg);
+        }
+        if (filterBureau) {
+            affiliations = affiliations.filter(a => a.bureau === filterBureau);
+        }
+        if (filterDivision) {
+            affiliations = affiliations.filter(a => a.division === filterDivision);
+        }
+        return [...new Set(affiliations.map(a => a.group).filter(Boolean))];
+    }
+}

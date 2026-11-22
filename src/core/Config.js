@@ -1,0 +1,126 @@
+/**
+ * @file src/core/Config.js
+ * @description คลาสเก็บค่าคงที่ การตั้งค่าเชื่อมต่อ Supabase และค่ามาตรฐานของระบบ (Vite + React Edition)
+ */
+
+const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : {};
+
+export class Config {
+    static SUPABASE_URL = env.VITE_SUPABASE_URL || 'https://yicatrqogmcncfpqdyra.supabase.co';
+    static SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_eF5hCLSrg74gre5UXNtVgw_UsPRbPZl';
+    static SUPABASE_SCHEMA = env.VITE_SUPABASE_SCHEMA || 'public';
+    static PROJECT_REF = 'yicatrqogmcncfpqdyra';
+    static GITHUB_REPO = 'https://github.com/STB6636/Checkin-Vite-React.git';
+
+    static STORAGE_KEYS = {
+        SESSION_USER: 'bma_checkin_session_user_v2_7',
+        THEME_MODE: 'bma_checkin_theme_mode_v2_7',
+        CACHED_SETTINGS: 'bma_checkin_cached_settings_v2_7',
+        WELCOME_TOAST: 'bma_checkin_welcome_toast_v2_7',
+        OFFICIAL_LOCATIONS: 'bma_official_locations_v2',
+        REMEMBER_ME: 'bma_remember_me',
+        REMEMBER_USERNAME: 'bma_remember_username',
+        LAST_SEEN_ANNOUNCEMENT: 'bma_last_seen_announcement_id'
+    };
+
+    static OFFICIAL_STATUSES = [
+        { key: 'normal', label: 'ปฏิบัติงานปกติ', defaultColor: '#007B3E', icon: 'fa-user-check' },
+        { key: 'late', label: 'มาสาย', defaultColor: '#EAB308', icon: 'fa-user-clock' },
+        { key: 'absent_duty', label: 'ขาดราชการ', defaultColor: '#EA580C', icon: 'fa-user-slash' },
+        { key: 'no_checkin', label: 'ไม่ลงเวลา', defaultColor: '#E11D48', icon: 'fa-user-xmark' },
+        { key: 'overtime', label: 'ปฏิบัติงานนอกเวลา', defaultColor: '#2563EB', icon: 'fa-business-time' }
+    ];
+
+    static DEFAULT_SETTINGS = {
+        id: 1,
+        organization_name: 'กรุงเทพมหานคร',
+        bureau_name: 'สำนักเทศกิจ',
+        header_system_title: 'BMA e-Government Time Attendance System',
+        logo_url: '',
+        footer_description: 'ระบบบันทึกเวลาปฏิบัติราชการอิเล็กทรอนิกส์ เพื่อการบริหารงานบุคคลที่มีประสิทธิภาพ',
+        require_photo: true,
+        allow_gallery_fallback: true,
+        require_gps: true,
+        enforce_geofence_radius: true,
+        single_click_checkin: false,
+        randomize_gps_checkout: false,
+        randomize_gps_radius_meters: 20,
+        allow_checkin_start_time: '06:00',
+        standard_check_in: '08:30',
+        standard_check_out: '16:30',
+        disable_normal_hours_checkin: false,
+        late_threshold_minutes: 30,
+        checkout_grace_minutes: 30,
+        filter_shifts_by_realtime: true,
+        early_shift_window_minutes: 30,
+        google_drive_script_url: '',
+        google_drive_folder_id: '',
+        announcement_enabled: false,
+        announcement_mode: 'text',
+        announcement_start_date: '',
+        announcement_end_date: '',
+        announcement_title: '',
+        announcement_body: '',
+        announcement_image_url: '',
+        announcement_drive_folder_id: '',
+        announcement_updated_at: '',
+        prefixes: ['นาย', 'นาง', 'นางสาว', 'ว่าที่ร้อยตรี', 'ว่าที่ร้อยตรีหญิง'],
+        positions: [
+            { type: 'ประเภททั่วไป', title: 'เจ้าพนักงานเทศกิจ', level: 'ปฏิบัติงาน' },
+            { type: 'ประเภททั่วไป', title: 'เจ้าพนักงานเทศกิจ', level: 'ชำนาญงาน' },
+            { type: 'ประเภทวิชาการ', title: 'นักจัดการงานเทศกิจ', level: 'ปฏิบัติการ' },
+            { type: 'ประเภทวิชาการ', title: 'นักจัดการงานเทศกิจ', level: 'ชำนาญการ' },
+            { type: 'ประเภทวิชาการ', title: 'นักวิชาการคอมพิวเตอร์', level: 'ปฏิบัติการ' }
+        ],
+        affiliations: [
+            { organization: 'กรุงเทพมหานคร', bureau: 'สำนักเทศกิจ', division: 'สำนักงานเลขานุการ', group: 'กลุ่มงานการเจ้าหน้าที่' },
+            { organization: 'กรุงเทพมหานคร', bureau: 'สำนักเทศกิจ', division: 'สำนักงานเลขานุการ', group: 'กลุ่มงานบริหารทั่วไป' },
+            { organization: 'กรุงเทพมหานคร', bureau: 'สำนักเทศกิจ', division: 'กองตรวจและปฏิบัติการพื้นที่ 1', group: 'กลุ่มงานตรวจและปฏิบัติการ 1' },
+            { organization: 'กรุงเทพมหานคร', bureau: 'สำนักเทศกิจ', division: 'กองตรวจและปฏิบัติการพื้นที่ 2', group: 'กลุ่มงานตรวจและปฏิบัติการ 2' }
+        ],
+        official_locations: [
+            { id: 'LOC-001', name: 'สำนักเทศกิจ', latitude: 13.756331, longitude: 100.501765, radius_meters: 150, is_active: true }
+        ],
+        remarks: [
+            'ปฏิบัติงานนอกสถานที่',
+            'อบรม',
+            'ประชุม',
+            'ปฏิบัติงานที่บ้าน (WFH)',
+            'ปฏิบัติงานเวรประจำวัน',
+            'ลืมลงเวลาปฏิบัติราชการ',
+            'โทรศัพท์/อุปกรณ์ขัดข้อง',
+            'อื่นๆ'
+        ],
+        offsite_job_types: [
+            'ปฏิบัติงานนอกสถานที่',
+            'อบรม/สัมมนา/ประชุมราชการ',
+            'ปฏิบัติงานที่บ้าน (WFH)',
+            'ปฏิบัติงานเวรประจำวัน',
+            'อื่นๆ'
+        ],
+        special_request_reasons: [
+            'ลืมลงเวลาปฏิบัติราชการ',
+            'โทรศัพท์/อุปกรณ์ขัดข้อง',
+            'ระบบอินเทอร์เน็ตขัดข้อง',
+            'ปฏิบัติงานภารกิจเร่งด่วน',
+            'อื่นๆ'
+        ],
+        work_shifts: [
+            { name: 'เวลาราชการปกติ', check_in: '08:30', check_out: '16:30', is_custom: false, is_overtime: false, is_overnight: false, allow_early_checkin: false },
+            { name: 'ผลัดเช้า', check_in: '06:00', check_out: '14:00', is_custom: false, is_overtime: false, is_overnight: false, allow_early_checkin: false },
+            { name: 'ผลัดบ่าย', check_in: '14:00', check_out: '22:00', is_custom: false, is_overtime: false, is_overnight: false, allow_early_checkin: false },
+            { name: 'ปฏิบัติงานนอกเวลา ช่วงเช้า', check_in: '05:00', check_out: '14:00', is_custom: false, is_overtime: true, is_overnight: false, allow_early_checkin: false },
+            { name: 'ปฏิบัติงานนอกเวลา ช่วงเย็น', check_in: '16:30', check_out: '20:30', is_custom: false, is_overtime: true, is_overnight: false, allow_early_checkin: false },
+            { name: 'ปฏิบัติงานนอกเวลา ข้ามวัน', check_in: '22:00', check_out: '01:00', is_custom: false, is_overtime: true, is_overnight: true, allow_early_checkin: false },
+            { name: 'อื่นๆ', check_in: '08:30', check_out: '16:30', is_custom: true, is_overtime: false, is_overnight: false, allow_early_checkin: false }
+        ],
+        category_colors: {
+            normal: '#007B3E',
+            late: '#EAB308',
+            absent_duty: '#EA580C',
+            no_checkin: '#E11D48',
+            overtime: '#2563EB',
+            group_header: '#007B3E'
+        }
+    };
+}

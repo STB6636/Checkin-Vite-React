@@ -1,0 +1,41 @@
+# Dependencies & Build Output
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment Secrets
+.env
+.env.local
+.env.*.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary and Log files
+*.log
+npm-debug.log*
+
+# Category 1: Legacy Vanilla Web Archive (Local Backup Only)
+legacy_web_original/
+
+# Category 2: Non-AI & Non-Web-Runtime Resources (Local Only)
+project_resources/
+
+# Category 3: AI Workflow, Knowledge Base & Dot-Folders (Local or AI-Brain Repo Only)
+ai_workspace/
+.agents/
+.ai_map/
+.git_ai_brain/
+AGENTS.md
